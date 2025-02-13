@@ -1,1 +1,1 @@
-# Detection_of_brain_tumors_using_MRI_MPPSD
+# Detection_of_brain_tumors_using_MRI
