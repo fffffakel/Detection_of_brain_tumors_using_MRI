@@ -1,1 +1,1 @@
-# MPPSD_Online_Store
+# Detection_of_brain_tumors_using_MRI_MPPSD
