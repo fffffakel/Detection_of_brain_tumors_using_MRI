@@ -1,0 +1,52 @@
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'WebSite/css/pats.css' %}">
+    <title>Список пациентов</title>
+</head>
+<body>
+    <div class="pats-container">
+        <h2 class="title">Список всех пациентов<h2>
+        
+        {% if patients %}
+        <div class="table-container">
+            <table class="patient-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Возраст</th>
+                        <th>Пол</th>
+                        <th>Врач</th>
+                        <th>Диагноз врача</th>
+                        <th>Диагноз нейросети</th>
+                        <th>Путь к данным</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.id }}</td>
+                        <td>{{ patient.name }}</td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.gender }}</td>
+                        <td>{{ patient.doctor_name }}</td>
+                        <td>{{ patient.doctor_diagnosis }}</td>
+                        <td>{{ patient.neural_diagnosis }}</td>
+                        <td><a class="table-link" href="{{ patient.server_path }}">Открыть</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-patients-message">Пациенты отсутствуют.</p>
+        {% endif %}
+        
+        <a href="{% url 'home' %}" class="logout-btn">Домой</a>
+        <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
+    </div>
+</body>
+</html>

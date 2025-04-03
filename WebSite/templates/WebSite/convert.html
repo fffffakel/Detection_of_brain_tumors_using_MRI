@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'WebSite/css/pats.css' %}">
+    <title>Конвертор</title>
+</head>
+<body>
+
+    {% if user.is_authenticated %}
+        <div class="pats-container">
+            <h2>Загрузка .nii файла</h2>
+
+            <form action="{% url 'convert' %}" method="post" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nii-upload" class="custom-file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
+                    </label>
+                    <input id="nii-upload" type="file" name="nii_file" accept=".nii,.nii.gz" required>
+                    <span class="file-name">Файл не выбран</span>
+                </div>
+                <button type="submit" class="submit-btn">Конвертировать</button>
+            </form>
+
+            <h3>Загруженные файлы:</h3>
+            <div class="table-container">
+                <table class="patient-table">
+                    <thead>
+                        <tr>
+                            <th>Файл</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                            <tr>
+                                <td>{{ file }}</td>
+                                <td><a href="{% url 'download' file %}" download class="conv-btn">Скачать</a></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2">Нет загруженных файлов</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if total_pages > 1 %}
+                <div class="pagination">
+                    {% if page_num > 1 %}
+                        <a href="?page=1" class="conv-btn">Первая</a>
+                        <a href="?page={{ page_num|add:-1 }}" class="conv-btn">Назад</a>
+                    {% endif %}
+                    {% if page_num < total_pages %}
+                        <a href="?page={{ page_num|add:1 }}" class="conv-btn">Вперед</a>
+                        <a href="?page={{ total_pages }}" class="conv-btn">Последняя</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</body>
+</html>
