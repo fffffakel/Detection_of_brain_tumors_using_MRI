@@ -1,155 +1,170 @@
+/* base.html*/
+
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #272a42;
+    margin: 0;
+    padding-top: 100px;
     font-family: Arial, sans-serif;
-    padding: 10px;
-    
 }
 
-.container {
-    position: relative;
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
     background-color: #7477a8;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    width: 90%;
-    max-width: 600px;
-    color: #120907;
-}
-
-.title{
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.form-group {
+    color: white;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: left;
-    margin-bottom: 15px;
+    padding: 0 20px;
+    z-index: 1000;
 }
 
-.form-group label {
-    flex: 1;
-    text-align: left;
-    margin-right: 10px;
+.navbar-left,
+.navbar-center,
+.navbar-right {
+    display: flex;
+    align-items: center;
 }
-
-.form-group input {
-    background: #ada1e5;
-    color: #120907;
-    flex:   1;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.submit-btn {
-    width: 100%;
-    padding: 10px;
-    background: #ada1e5;
-    color: #120907;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.submit-btn:hover {
-    background-color: #988cca;
-}
-
-.link {
-    color: #e6acf5;
-}
-
-.link:hover {
-    color: #b185bd;
-}
-
-.messages {
-    list-style: none;
-    padding: 10px;
-}
-
-.messages li {
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.success {
-    color: #194b17 !important;
-}
-
-.error {
-    color: #922d2d !important;
-}
-
-
-.color1 {color: #120907;}
-.color2 {color: #272a42;}
-.color3 {color: #62648d;}
-.color4 {color: #ada1e5;}
-.color5 {color: #f5dced;}
 
 .logo {
-    text-align: center;
-    margin-bottom: 20px;
+    height: 90px;
 }
 
-.logo img {
-    width: 150px; /* Настройте размер логотипа по вашему усмотрению */
-    height: auto;
+.site-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
 }
+
+.username {
+    margin-right: 15px;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.3); /* Более заметный фон */
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 1rem;
+    color: #fff; /* Белый текст для контраста */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень для выделения */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.username:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Подсветка при ховере */
+    color: #7477a8; /* Цвет текста в ховере */
+}
+
+.logout-btn {
+    background-color: #f18f88;  /* Исходный цвет кнопки */
+    color: white;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень для кнопки */
+}   
+
+.logout-btn:hover {
+    background-color: #d06d68;  /* Цвет на ховер */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Увеличиваем тень при ховере */
+}
+
+.login-btn {
+    background-color: #7477a8;  /* Исходный цвет кнопки */
+    color: white;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень для кнопки */
+}
+
+.login-btn:hover {
+    background-color: #45a049;  /* Потемнение на ховере */
+    transform: translateY(-2px); /* Легкое поднятие кнопки */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Усиленная тень при ховере */
+}
+
+.inactive {
+    background-color: transparent; /* Прозрачный фон */
+    color: transparent;  /* Прозрачный текст */
+    pointer-events: none; /* Блокируем клики */
+    text-decoration: none; /* Убираем подчеркивание */
+    box-shadow: none; /* Убираем тень */
+}
+
+/* Ховер-эффект на неактивной кнопке */
+.inactive:hover {
+    background-color: transparent; /* Прозрачный фон на ховер */
+    color: transparent;  /* Прозрачный текст на ховер */
+    box-shadow: none; /* Убираем тень на ховер */
+}
+
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;       /* по горизонтали */
+    justify-content: center;   /* по вертикали */
+    min-height: calc(100vh - 100px); /* весь экран минус шапка */
+    text-align: center;
+    background-color: #272a42;
+}
+
+/* home.html */
+.welcome-text {
+    font-size: 1.5rem;              /* Сделаем текст немного крупнее */
+    font-weight: 600;               /* Жирный шрифт для акцента */
+    color: #ffffff;                /* Цвет, гармонирующий с шапкой */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.05); /* Тень для текста */
+    margin-bottom: 40px;           /* Добавим немного больше пространства снизу */
+    text-align: center;            /* Центрируем текст */
+    line-height: 1.4;              /* Межстрочный интервал для лучшей читаемости */
+    transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out; /* Плавные переходы */
+}
+
+
+
 
 .buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Расстояние между кнопками */
-    margin-bottom: 60px;
-}
-
-.btn-link {
-    padding: 10px 20px;
-    background-color: #ada1e5;
-    color: #120907;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 20px;
 }
 
-.btn-link:hover {
-    background-color: #988cca;
-}
-
-/* Стили для ссылки в таблице */
-.table-link {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.table-link:hover {
-    text-decoration: underline;
-}
-
-/* Стили для кнопки выхода */
-.logout-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 20px;
-    background-color: #624268;
-    color: white;
+.btn-link {
+    display: block;
     text-align: center;
-    border-radius: 5px;
+    background-color: #7477a8; /* Цвет, как в шапке */
+    color: white;              /* Белый текст для контраста */
+    padding: 15px 25px;        /* Увеличил размер кнопок */
     text-decoration: none;
+    border-radius: 25px;       /* Сделаем кнопки с более круглыми углами */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Легкая тень */
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
 }
 
-.logout-btn:hover {
-    background-color: #724d79;
+.btn-link:hover {
+    background-color: #555;    /* Цвет фона при ховере (потемнение) */
+    transform: translateY(-3px); /* Немного приподнимем кнопку */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Более заметная тень */
+}
+
+/* Если хочется увеличить размер шрифта для более заметных кнопок */
+.btn-link {
+    font-size: 1.1rem;
+}
+
+/* Кнопки для неавторизованных */
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
 }

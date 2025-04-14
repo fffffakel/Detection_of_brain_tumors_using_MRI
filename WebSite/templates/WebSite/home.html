@@ -1,38 +1,23 @@
+{% extends 'WebSite/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'WebSite/css/styles.css' %}">
-    <title>Главная страница</title>
-</head>
-<body>
-    <div class="container">
-        <div class="logo">
-            <img src="{% static 'WebSite/images/logo.svg' %}" alt="Логотип">
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="home-center">
+    {% if user.is_authenticated %}
+        <p class="welcome-text">Добро пожаловать, <strong>{{ user.username }}</strong>!</p>
+
+        <div class="buttons">
+            <a href="{% url 'model' %}" class="btn-link">Model</a>
+            <a href="{% url 'convert' %}" class="btn-link">Convertor</a>
+            <a href="{% url 'patients' %}" class="btn-link">Patients</a>
         </div>
-
-        
-
-        
-        {% if user.is_authenticated %}
-            <h2 class="title"><h2>
-            <p class="welcome-text">Добро пожаловать, <strong>{{ user.username }}</strong>!</p>
-
-            <div class="buttons">
-                <a href="{% url 'model' %}" class="btn-link">Model</a>
-                <a href="{% url 'convert' %}" class="btn-link">Convertor</a>
-                <a href="{% url 'patients' %}" class="btn-link">Patients</a>
-            </div>
-                                
-            <a href="{% url 'logout' %}" class="btn-link logout-btn">Выйти</a>
-        {% else %}
-            <div class="auth-buttons">
-                <a href="{% url 'login' %}" class="btn-link">Войти</a>
-                <a href="{% url 'signup' %}" class="btn-link">Зарегистрироваться</a>
-            </div>
-        {% endif %}
-    </div>
-</body>
-</html>
+    {% else %}
+        <div class="auth-buttons">
+            <a href="{% url 'login' %}" class="btn-link">Войти</a>
+            <a href="{% url 'signup' %}" class="btn-link">Зарегистрироваться</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

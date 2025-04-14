@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Мой сайт{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'WebSite/css/styles.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'WebSite/images/logo.svg' %}" alt="Логотип" class="logo">
+        </div>
+        <div class="navbar-centre">
+            <h1 class="site-title">MRInspect</h1>
+        </div>
+        <div class="navbar-right">
+            {% if user.is_authenticated %}
+                <p class="username">{{ user.username }}</p>
+                <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="login-btn{% if request.path == '/' %} inactive{% endif %}">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
