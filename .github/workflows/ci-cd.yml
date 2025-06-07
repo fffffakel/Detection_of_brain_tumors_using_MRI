@@ -14,6 +14,24 @@ env:
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: brain_tutor_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
 
     steps:
     - name: Checkout code
@@ -28,7 +46,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # 🔨 Сборка тестового образа без пуша
     - name: Build Docker image (for testing)
       uses: docker/build-push-action@v5
       with:
@@ -39,12 +56,31 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    # ✅ Прогон тестов
-    - name: Run Django tests
+    - name: Start dependencies and web service
       run: |
-        docker run --rm ${{ env.TEST_TAG }} python manage.py test
+        docker network create cicd_network || true
+        docker run -d --name postgres --network cicd_network -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=brain_tutor_db postgres:15
+        docker run -d --name redis --network cicd_network redis:7
+        docker run -d --name web --network cicd_network -p 8000:8000 ${{ env.TEST_TAG }}
 
-    # 🚀 Финальная сборка и пуш в Docker Hub
+    - name: Wait for Postgres
+      run: |
+        for i in {1..10}; do
+          docker exec postgres pg_isready -U postgres && break
+          echo "Waiting for Postgres..."
+          sleep 5
+        done
+
+    - name: Run migrations and tests
+      run: |
+        docker exec web python manage.py migrate
+        docker exec web python manage.py test
+
+    - name: Cleanup test containers
+      run: |
+        docker rm -f web postgres redis
+        docker network rm cicd_network || true
+
     - name: Build and push production image
       uses: docker/build-push-action@v5
       with:
@@ -52,4 +88,4 @@ jobs:
         push: true
         tags: ${{ env.PROD_TAG }}
         cache-from: type=gha
-        cache-to: type=gha,mode=max 
+        cache-to: type=gha,mode=max
