@@ -10,7 +10,9 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <img src="{% static 'WebSite/images/logo.svg' %}" alt="Логотип" class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'WebSite/images/logo.svg' %}" alt="Логотип" class="logo">
+            </a>
         </div>
         <div class="navbar-centre">
             <h1 class="site-title">MRInspect</h1>
@@ -20,7 +22,7 @@
                 <p class="username">{{ user.username }}</p>
                 <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
             {% else %}
-                <a href="{% url 'login' %}" class="login-btn{% if request.path == '/' %} inactive{% endif %}">Войти</a>
+                <a href="{% url 'login' %}" class="login-btn{% if request.path == '/' or request.path == '/login/' %} inactive{% endif %}">Войти</a>
             {% endif %}
         </div>
     </div>

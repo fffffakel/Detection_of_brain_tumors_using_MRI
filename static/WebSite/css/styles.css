@@ -3,7 +3,8 @@
 body {
     margin: 0;
     padding-top: 100px;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
 }
 
 .navbar {
@@ -84,7 +85,7 @@ body {
 }
 
 .login-btn:hover {
-    background-color: #45a049;  /* Потемнение на ховере */
+    background-color: #45a049;
     transform: translateY(-2px); /* Легкое поднятие кнопки */
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Усиленная тень при ховере */
 }
@@ -147,17 +148,13 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Легкая тень */
     transition: all 0.3s ease-in-out;
     font-weight: 1000;
+    font-size: 1.1rem;
 }
 
 .btn-link:hover {
     background-color: #555;    /* Цвет фона при ховере (потемнение) */
     transform: translateY(-3px); /* Немного приподнимем кнопку */
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Более заметная тень */
-}
-
-/* Если хочется увеличить размер шрифта для более заметных кнопок */
-.btn-link {
-    font-size: 1.1rem;
 }
 
 /* Кнопки для неавторизованных */
@@ -167,4 +164,278 @@ body {
     gap: 15px;
     max-width: 300px;
     margin: 0 auto;
+}
+
+/* Логин */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирует элементы по горизонтали */
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.login-form label {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.login-form input {
+    width: 100%;
+    max-width: 250px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center; /* если хочешь текст внутри тоже по центру */
+}
+
+.login-form-button {
+    background-color: #7477a8;
+    color: white;
+    font-weight: 600;
+    padding: 10px 15px;
+    border-radius: 25px;
+    margin-top: 5px;
+    width: 100%;
+    max-width: 280px;
+    border: none;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.login-form-button:hover {
+    background-color: #555; /* Потемнение на ховере */
+    transform: translateY(-3px); /* Немного приподнимем кнопку */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Более заметная тень */
+}
+
+.registration-link p {
+    color: white;
+    margin-top: 20px;
+}
+
+.registration-link a {
+    color: #f18f88;
+    font-weight: 600;
+    text-decoration: none; /* Убираем подчеркивание */
+    transition: color 0.3s ease;
+}
+
+.registration-link a:hover {
+    color: #d06d68; /* Цвет при ховере */
+}
+
+/* Сообщения (ошибки, инфо и т.д.) */
+.messages {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.messages li {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Цвета для разных типов сообщений (если у message есть .error, .success и т.д.) */
+.messages li.error {
+    background-color: rgba(220, 20, 60, 0.8);
+}
+
+.messages li.success {
+    background-color: rgba(34, 139, 34, 0.8);
+}
+
+/* Пациенты */
+
+.pats-container {
+    padding: 30px;
+    background-color: #272a42;
+    text-align: center;
+
+}
+
+.title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.table-container {
+    margin-top: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.patient-table th, .patient-table td {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.patient-table th {
+    background-color: #7477a8;
+    color: #272a42;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.patient-table td {
+    background-color: #f9f9f9;
+    color: #272a42;
+}
+
+.patient-table tr:nth-child(even) td {
+    background-color: #7477a8;
+}
+
+.patient-table tr:hover {
+    background-color: #f0f5ff;
+    transition: background-color 0.3s ease;
+}
+
+.table-link {
+    color: #272a42;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.table-link:hover {
+    color: #d06d68;
+    text-decoration: underline;
+}
+
+.no-patients-message {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* Конвертор */
+
+.upload-form {
+    background-color: #fff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.upload-form .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.upload-form label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.upload-form input[type="text"],
+.upload-form input[type="number"],
+.upload-form select,
+.upload-form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.upload-form textarea {
+    resize: vertical;
+}
+
+#nii-upload {
+    display: none;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #7477a8;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #d06d68;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #555;
+    font-style: italic;
+}
+
+.submit-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #7477a8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #d06d68;
+}
+
+.submit-btn:active {
+    transform: translateY(2px);
 }

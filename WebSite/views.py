@@ -1,156 +1,217 @@
+# Standard library imports
 import os
-import subprocess
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from django.contrib.auth.decorators import login_required
+# Third-party imports
+import matplotlib
+matplotlib.use('Agg')  # Используем без GUI
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Django imports
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
-from django.http import FileResponse
-from django.core.paginator import Paginator
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import Http404
+from django.shortcuts import render, redirect
+from django.utils.text import get_valid_filename
+
+# Local application imports
+from .models import Patient
+from .tasks import convert_patient_nii
 
 
+# === User registration ===
 
-from .models import DataModel, Patient
+def validate_registration(username, email, password, confirm_password):
+    if password != confirm_password:
+        return "Пароли не совпадают!"
+    if User.objects.filter(username=username).exists():
+        return "Имя пользователя уже занято!"
+    if User.objects.filter(email=email).exists():
+        return "Этот email уже зарегистрирован!"
+    return None
 
 
-ALLOWED_EXTENSIONS = {".nii", ".nii.gz"}  # Разрешенные расширения
+def create_user_account(username, email, password):
+    user = User.objects.create_user(username=username,
+                                    email=email,
+                                    password=password)
+    user.save()
+    return user
 
 
 def register_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password = request.POST["password"]
-        confirm_password = request.POST["confirm_password"]
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
 
-        if password != confirm_password:
-            messages.error(request, "Пароли не совпадают!")
+        error = validate_registration(username,
+                                      email,
+                                      password,
+                                      confirm_password)
+        if error:
+            messages.error(request, error)
             return render(request, "WebSite/signup.html")
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Имя пользователя уже занято!")
-            return render(request, "WebSite/signup.html")
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Этот email уже зарегистрирован!")
-            return render(request, "WebSite/signup.html")
-
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.save()
-
-        messages.success(request, "Регистрация успешна! Теперь войдите в аккаунт.")
+        create_user_account(username, email, password)
+        messages.success(request,
+                         "Регистрация успешна! Теперь войдите в аккаунт.")
         return redirect("login")
 
     return render(request, "WebSite/signup.html")
 
 
+# === User login/logout ===
+
 def login_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        user = authenticate(request, username=username, password=password)
-        
+        user = authenticate(request,
+                            username=username,
+                            password=password)
+
         if user is not None:
             login(request, user)
-            messages.success(request, "Вы успешно вошли в систему!")
-            return redirect("home")  # Перенаправляем на главную страницу
+            messages.success(request,
+                             "Вы успешно вошли в систему!")
+            return redirect("home")
         else:
-            messages.error(request, "Неверное имя пользователя или пароль!")
-    
+            messages.error(request,
+                           "Неверное имя пользователя или пароль!")
+
     return render(request, "WebSite/login.html")
 
 
 def logout_view(request):
     logout(request)
-    messages.success(request, "Вы вышли из системы.")
+    messages.success(request,
+                     "Вы вышли из системы.")
     return redirect("home")
 
 
-def home_view(request):
-    data = DataModel.objects.all() if request.user.is_authenticated else None
-    return render(request, 'WebSite/home.html', {'data': data})
-
+# === Home page view ===
 
 def home(request):
     return render(request, 'WebSite/home.html')
 
 
-def model(request):
-    return render(request, 'WebSite/model.html')
+# === Patients list view ===
 
-
-def predictions(request):
-    return render(request, 'WebSite/predictions.html')
-
-
-# def convert(request):
-#     return render(request, 'WebSite/convert.html')
-
-
+@login_required
 def patients(request):
-    patients_data = Patient.objects.all()  # Получаем всех пациентов
+    patients_data = (
+        Patient.objects
+        .filter(doctor_name=request.user.username)
+        .order_by('id')
+    )
     return render(request, 'WebSite/patients.html', {'patients': patients_data})
+
+
+# === NII file handling service ===
+
+class NiiFileHandler:
+    ALLOWED_EXTENSIONS = {".nii", ".nii.gz"}
+
+    @staticmethod
+    def is_valid_extension(filename):
+        ext = os.path.splitext(filename)[-1].lower()
+        if filename.endswith(".nii.gz"):
+            ext = ".nii.gz"
+        return ext in NiiFileHandler.ALLOWED_EXTENSIONS
+
+    @staticmethod
+    def save_file(user, file):
+        filename = get_valid_filename(file.name)
+        if not NiiFileHandler.is_valid_extension(filename):
+            raise SuspiciousOperation(f"Invalid file type: {filename}")
+
+        user_folder = os.path.join("nii", user.username)
+        file_path = os.path.join(user_folder, filename)
+        saved_path = default_storage.save(file_path, ContentFile(file.read()))
+        full_path = default_storage.path(saved_path)
+        return filename, full_path
+
+
+def create_patient_record(data, doctor_name):
+    return Patient.objects.create(
+        name=data['name'],
+        age=int(data['age']),
+        gender=data['gender'],
+        doctor_name=doctor_name,
+        doctor_diagnosis=data['doctor_diagnosis'],
+        neural_diagnosis="—"
+    )
 
 
 @login_required
 def convert(request):
-    user_folder = os.path.join("nii", request.user.username)  # Используем относительный путь
-
     if request.method == "POST" and request.FILES.get("nii_file"):
         nii_file = request.FILES["nii_file"]
 
-        # Проверяем имя файла
-        filename = nii_file.name
-        if ".." in filename or filename.startswith("/"):
-            raise SuspiciousOperation("Detected path traversal attempt in file name.")
+        patient_data = {
+            'name': request.POST.get("name"),
+            'age': request.POST.get("age"),
+            'gender': request.POST.get("gender"),
+            'doctor_diagnosis': request.POST.get("doctor_diagnosis"),
+        }
+        doctor_name = request.user.username
 
-        # Проверка расширения файла
-        ext = os.path.splitext(filename)[-1].lower()
-        if filename.endswith(".nii.gz"):  # Обрабатываем двойное расширение
-            ext = ".nii.gz"
+        filename, full_path = NiiFileHandler.save_file(request.user, nii_file)
+        patient = create_patient_record(patient_data, doctor_name)
+        convert_patient_nii.delay(patient.id, full_path, filename)
 
-        if ext not in ALLOWED_EXTENSIONS:
-            raise SuspiciousOperation(f"Invalid file type: {ext}")
+        return redirect("convert")
 
-        # Формируем безопасный путь
-        file_path = os.path.join(user_folder, filename)
+    return render(request, "WebSite/convert.html")
 
-        # Сохраняем файл через default_storage
-        file_path = default_storage.save(file_path, ContentFile(nii_file.read()))
 
-    # Получаем список файлов
-    if default_storage.exists(user_folder):
-        files = default_storage.listdir(user_folder)[1]
-    else:
-        files = []
+# === View PNG images and folders ===
 
-    # Пагинация
-    paginator = Paginator(files, 5)  # 15 файлов на страницу
-    page_num = request.GET.get('page', 1)  # Получаем номер страницы из параметров запроса
-    page = paginator.get_page(page_num)  # Получаем страницу
-
-    return render(request, "WebSite/convert.html", {
-        "files": page,  # Передаем объект страницы
-        "page_num": page.number,  # Текущий номер страницы
-        "total_pages": paginator.num_pages,  # Общее количество страниц
-        "media_url": settings.MEDIA_URL
-    })
-    
-    
 @login_required
-def download(request, filename):
-    user_folder = os.path.join("nii", request.user.username)
-    file_path = os.path.join(user_folder, filename)
+def view_pngs(request, folder):
+    base_folder = os.path.join(settings.MEDIA_ROOT, "png", folder)
 
-    # Проверяем, существует ли файл
-    if not default_storage.exists(file_path):
-        raise SuspiciousOperation("File does not exist.")
+    if not os.path.exists(base_folder):
+        raise Http404("Папка не найдена")
 
-    # Отдаем файл через FileResponse без изменения размера
-    return FileResponse(default_storage.open(file_path, 'rb'), content_type='application/octet-stream')
+    dirs, files = default_storage.listdir(base_folder)
+
+    if dirs:
+        subfolder_urls = [os.path.join(folder, d) for d in sorted(dirs)]
+        context = {
+            'folder': folder,
+            'subfolders': zip(subfolder_urls, sorted(dirs)),
+        }
+        return render(request, 'WebSite/folder_list.html', context)
+
+    png_files = sorted([f for f in files if f.lower().endswith('.png')])
+    png_file_urls = [
+        os.path.join(settings.MEDIA_URL, 'png', folder, f)
+        for f in png_files
+    ]
+    page = request.GET.get('page', 1)
+    paginator = Paginator(list(zip(png_file_urls, png_files)), 20)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    context = {
+        'folder': folder,
+        'png_files': page_obj.object_list,
+        'media_url': settings.MEDIA_URL,
+        'page_obj': page_obj,
+    }
+    return render(request, 'WebSite/view_pngs.html', context)

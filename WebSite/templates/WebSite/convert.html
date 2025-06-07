@@ -1,79 +1,59 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'WebSite/css/pats.css' %}">
-    <title>Конвертор</title>
-</head>
-<body>
+{% extends 'WebSite/base.html' %}
 
-    {% if user.is_authenticated %}
-        <div class="pats-container">
-            <h2>Загрузка .nii файла</h2>
+{% block title %}Загрузка пациента{% endblock %}
 
-            <form action="{% url 'convert' %}" method="post" enctype="multipart/form-data" class="upload-form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="nii-upload" class="custom-file-upload">
-                        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
-                    </label>
-                    <input id="nii-upload" type="file" name="nii_file" accept=".nii,.nii.gz" required onchange="updateFileName(this)">
-                    <span id="file-name" class="file-name">Файл не выбран</span>
-                </div>
-                <button type="submit" class="submit-btn">Конвертировать</button>
-            </form>
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="pats-container">
+        <h2 class="title">Добавить нового пациента</h2>
 
-            <h3>Загруженные файлы:</h3>
-            <div class="table-container">
-                <table class="patient-table">
-                    <thead>
-                        <tr>
-                            <th>Файл</th>
-                            <th>Действие</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for file in files %}
-                            <tr>
-                                <td>{{ file }}</td>
-                                <td><a href="{% url 'download' file %}" download class="conv-btn">Скачать</a></td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="2">Нет загруженных файлов</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <form action="{% url 'convert' %}" method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>ФИО</label>
+                <input type="text" name="name" required>
             </div>
 
-            {% if total_pages > 1 %}
-                <div class="pagination">
-                    {% if page_num > 1 %}
-                        <a href="?page=1" class="conv-btn">Первая</a>
-                        <a href="?page={{ page_num|add:-1 }}" class="conv-btn">Назад</a>
-                    {% endif %}
-                    {% if page_num < total_pages %}
-                        <a href="?page={{ page_num|add:1 }}" class="conv-btn">Вперед</a>
-                        <a href="?page={{ total_pages }}" class="conv-btn">Последняя</a>
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
+            <div class="form-group">
+                <label>Возраст</label>
+                <input type="number" name="age" min="0" required>
+            </div>
 
-        <script>
-            function updateFileName(input) {
-                const fileNameSpan = document.getElementById('file-name');
-                if (input.files.length > 0) {
-                    fileNameSpan.textContent = input.files[0].name;
-                } else {
-                    fileNameSpan.textContent = 'Файл не выбран';
-                }
-            }
-        </script>
-    {% endif %}
+            <div class="form-group">
+                <label>Пол</label>
+                <select name="gender" required>
+                    <option value="male">Мужчина</option>
+                    <option value="female">Женщина</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
 
-</body>
-</html>
+            <div class="form-group">
+                <label>Диагноз врача</label>
+                <textarea name="doctor_diagnosis" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="nii-upload" class="custom-file-upload">
+                    <i class="fas fa-cloud-upload-alt"></i> Выберите .nii/.nii.gz файл
+                </label>
+                <input id="nii-upload" type="file" name="nii_file" accept=".nii,.nii.gz" required onchange="updateFileName(this)">
+                <span id="file-name" class="file-name">Файл не выбран</span>
+            </div>
+
+            <button type="submit" class="submit-btn">Сохранить и Конвертировать</button>
+        </form>
+
+    </div>
+            <a href="{% url 'home' %}" class="btn-link">На главную</a>
+
+
+    <script>
+        function updateFileName(input) {
+            const fileNameSpan = document.getElementById('file-name');
+            fileNameSpan.textContent = input.files.length > 0 ? input.files[0].name : 'Файл не выбран';
+        }
+    </script>
+{% endif %}
+{% endblock %}

@@ -1,18 +1,24 @@
 from django.shortcuts import redirect
+from django.utils.decorators import sync_and_async_middleware
 
 
-class RedirectIfNotAuthenticatedMiddleware:
-    """
-    Middleware для проверки, аутентифицирован ли пользователь.
-    Если нет - перенаправляем его на главную страницу.
-    """
-    def __init__(self, get_response):
-        self.get_response = get_response
+@sync_and_async_middleware
+def redirect_if_not_authenticated_middleware(get_response):
+    allowed_paths = ['/', '/login/', '/signup/']
 
-    def __call__(self, request):
-        # Если пользователь не аутентифицирован и не на главной странице
-        if not request.user.is_authenticated and request.path != '/':
+    async def middleware_async(request):
+        if (not request.user.is_authenticated and
+                request.path not in allowed_paths):
             return redirect('/')
-        
-        response = self.get_response(request)
+        response = await get_response(request)
         return response
+
+    def middleware_sync(request):
+        if (not request.user.is_authenticated and
+                request.path not in allowed_paths):
+            return redirect('/')
+        response = get_response(request)
+        return response
+
+    return middleware_async if callable(get_response) and \
+        hasattr(get_response, '__await__') else middleware_sync

@@ -9,10 +9,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('signup/', views.register_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
-    path('model/', views.model, name='model'),
-    path('predictions/', views.predictions, name='predictions'),
     path('convert/', views.convert, name='convert'),
     path('patients/', views.patients, name='patients'),
-    path('download/<str:filename>/', views.download, name='download'),
+    path('patients/<path:folder>/', views.view_pngs, name='view_pngs'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

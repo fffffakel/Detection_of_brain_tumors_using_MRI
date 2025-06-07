@@ -1,0 +1,30 @@
+{% extends 'WebSite/base.html' %}
+{% load static %}
+
+{% block title %}
+Выбор подпапки — {{ folder }}
+{% endblock %}
+
+{% block content %}
+<h1>Выбор подпапки для: {{ folder }}</h1>
+
+{% if subfolders %}
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
+        {% for url, name in subfolders %}
+            <a href="{% url 'view_pngs' url %}" style="
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            ">
+                {{ name }}
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Нет подпапок для отображения.</p>
+{% endif %}
+{% endblock %}

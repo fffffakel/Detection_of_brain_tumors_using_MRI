@@ -1,0 +1,20 @@
+# Dockerfile.celery
+
+# Используем тот же базовый образ, что и для веба (например, python 3.11 slim)
+FROM python:3.11-slim
+
+# Создаём рабочую директорию
+WORKDIR /app
+
+# Копируем requirements и устанавливаем зависимости
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем весь проект (можно точечно, если надо)
+COPY . .
+
+# Экспортируем переменные окружения (опционально)
+ENV PYTHONUNBUFFERED=1
+
+# Запуск Celery worker
+CMD ["celery", "-A", "BrainTumor", "worker", "--loglevel=info"]

@@ -4,3 +4,9 @@ django-allauth==65.4.1
 psycopg2-binary==2.9.10
 sqlparse==0.5.3
 python-dotenv
+nibabel
+numpy
+matplotlib
+uvicorn[standard]
+celery
+redis
