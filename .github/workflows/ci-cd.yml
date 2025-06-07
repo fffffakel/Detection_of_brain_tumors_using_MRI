@@ -1,0 +1,54 @@
+name: Django CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  IMAGE_NAME: brain-tutor
+  TEST_TAG: brain-tutor:ci-test
+  PROD_TAG: ${{ secrets.DOCKER_USERNAME }}/brain-tutor:latest
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # 🔨 Сборка тестового образа без пуша
+    - name: Build Docker image (for testing)
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        tags: ${{ env.TEST_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    # ✅ Прогон тестов
+    - name: Run Django tests
+      run: |
+        docker run --rm ${{ env.TEST_TAG }} python manage.py test
+
+    # 🚀 Финальная сборка и пуш в Docker Hub
+    - name: Build and push production image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ env.PROD_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
