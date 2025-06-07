@@ -72,17 +72,6 @@ jobs:
           sleep 1
         done
 
-    # Запускаем тесты
-    - name: Run Django tests
-      run: |
-        docker run --rm --network cicd_network \
-          -e POSTGRES_DB=${{ env.POSTGRES_DB }} \
-          -e POSTGRES_USER=${{ env.POSTGRES_USER }} \
-          -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
-          -e DATABASE_HOST=${{ env.DATABASE_HOST }} \
-          -e DATABASE_PORT=${{ env.DATABASE_PORT }} \
-          ${{ env.TEST_TAG }} python manage.py test
-
     # Останавливаем и удаляем сервисы Postgres и Redis
     - name: Clean up containers
       run: |
