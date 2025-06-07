@@ -34,6 +34,7 @@ jobs:
       with:
         context: .
         push: false
+        load: true
         tags: ${{ env.TEST_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -51,4 +52,4 @@ jobs:
         push: true
         tags: ${{ env.PROD_TAG }}
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=max 
