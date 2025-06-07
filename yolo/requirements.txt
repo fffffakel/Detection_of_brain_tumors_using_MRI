@@ -1,0 +1,6 @@
+torch==2.3.0+cu124
+torchvision==0.18.0+cu124
+torchaudio==2.3.0+cu124
+ultralytics>=8.0.0
+matplotlib
+pandas

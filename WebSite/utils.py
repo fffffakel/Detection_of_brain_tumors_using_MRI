@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import logging
 from django.conf import settings
 
+from .models import Patient
 logger = logging.getLogger(__name__)
 
 
@@ -21,8 +22,7 @@ def convert_nii_to_png(input_path, output_base_folder, filename, slice_range=(12
         image_data = nifti_image.get_fdata()
         _, _, z_dim = image_data.shape
 
-        basename = filename.replace(".nii.gz", "").replace(".nii", "")
-        abs_output_folder = os.path.join(settings.MEDIA_ROOT, output_base_folder, basename)
+        abs_output_folder = os.path.join(settings.MEDIA_ROOT, output_base_folder)
         os.makedirs(abs_output_folder, exist_ok=True)
         logger.info(f"Папка для PNG: {abs_output_folder}")
 
@@ -52,3 +52,12 @@ def convert_nii_to_png(input_path, output_base_folder, filename, slice_range=(12
     except Exception as e:
         logger.error(f"Ошибка конвертации nii в png: {e}", exc_info=True)
         raise
+
+
+def get_patient(patient_id):
+    return Patient.objects.get(id=patient_id)
+
+
+def update_patient_server_path(patient, server_path):
+    patient.server_path = server_path
+    patient.save()

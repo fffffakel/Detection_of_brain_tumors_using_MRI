@@ -50,7 +50,20 @@ services:
     networks:
       - mynetwork
 
-
+  yoloserver:
+    build: ./yolo  # Путь к папке с Dockerfile YOLO
+    container_name: yoloserver
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    ports:
+      - "8001:8001"
+    volumes:
+      - .:/workspace       # весь проект
+      - ./media:/workspace/media  # доступ к /media, если YOLO это нужно явно
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:
