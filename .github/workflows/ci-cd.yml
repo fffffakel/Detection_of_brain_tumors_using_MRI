@@ -2,36 +2,25 @@ name: Django CI/CD
 
 on:
   push:
-    branches: [ main, dev/web ]
+    branches: [main, dev/web]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   IMAGE_NAME: brain-tutor
   TEST_TAG: brain-tutor:ci-test
   PROD_TAG: ${{ secrets.DOCKER_USERNAME }}/brain-tutor:latest
+  POSTGRES_DB: brain_tutor_db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  DATABASE_HOST: db
+  DATABASE_PORT: 5432
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
 
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: brain_tutor_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
 
     steps:
     - name: Checkout code
@@ -46,6 +35,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    # Сборка тестового образа без пуша
     - name: Build Docker image (for testing)
       uses: docker/build-push-action@v5
       with:
@@ -56,31 +46,62 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Start dependencies and web service
-      run: |
-        docker network create cicd_network || true
-        docker run -d --name postgres --network cicd_network -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=brain_tutor_db postgres:15
-        docker run -d --name redis --network cicd_network redis:7
-        docker run -d --name web --network cicd_network -p 8000:8000 ${{ env.TEST_TAG }}
+    # Создаем пользовательскую сеть для запуска контейнеров
+    - name: Create Docker network
+      run: docker network create cicd_network || echo "Network already exists"
 
+    # Запускаем Postgres и Redis локально в CI
+    - name: Start Postgres container
+      run: |
+        docker run -d --name postgres --network cicd_network \
+          -e POSTGRES_DB=${{ env.POSTGRES_DB }} \
+          -e POSTGRES_USER=${{ env.POSTGRES_USER }} \
+          -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+          postgres:15
+
+    - name: Start Redis container
+      run: |
+        docker run -d --name redis --network cicd_network redis:7
+
+    # Ждем, пока Postgres будет доступен
     - name: Wait for Postgres
       run: |
-        for i in {1..10}; do
-          docker exec postgres pg_isready -U postgres && break
-          echo "Waiting for Postgres..."
-          sleep 5
+        for i in {1..30}; do
+          docker exec postgres pg_isready -U ${{ env.POSTGRES_USER }} && break
+          echo "Waiting for postgres..."
+          sleep 1
         done
 
-    - name: Run migrations and tests
+    # Запускаем миграции
+    - name: Run migrations
       run: |
-        docker exec web python manage.py migrate
-        docker exec web python manage.py test
+        docker run --rm --network cicd_network \
+          -e POSTGRES_DB=${{ env.POSTGRES_DB }} \
+          -e POSTGRES_USER=${{ env.POSTGRES_USER }} \
+          -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+          -e DATABASE_HOST=${{ env.DATABASE_HOST }} \
+          -e DATABASE_PORT=${{ env.DATABASE_PORT }} \
+          ${{ env.TEST_TAG }} python manage.py migrate
 
-    - name: Cleanup test containers
+    # Запускаем тесты
+    - name: Run Django tests
       run: |
-        docker rm -f web postgres redis
-        docker network rm cicd_network || true
+        docker run --rm --network cicd_network \
+          -e POSTGRES_DB=${{ env.POSTGRES_DB }} \
+          -e POSTGRES_USER=${{ env.POSTGRES_USER }} \
+          -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
+          -e DATABASE_HOST=${{ env.DATABASE_HOST }} \
+          -e DATABASE_PORT=${{ env.DATABASE_PORT }} \
+          ${{ env.TEST_TAG }} python manage.py test
 
+    # Останавливаем и удаляем сервисы Postgres и Redis
+    - name: Clean up containers
+      run: |
+        docker stop postgres redis
+        docker rm postgres redis
+        docker network rm cicd_network || echo "Network removal failed or network doesn't exist"
+
+    # Финальная сборка и пуш в Docker Hub
     - name: Build and push production image
       uses: docker/build-push-action@v5
       with:
