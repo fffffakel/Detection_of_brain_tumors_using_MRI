@@ -34,12 +34,26 @@ jobs:
 
       - name: ⚙️ Установка Docker Compose
         run: |
-          DOCKER_CONFIG=${{ runner.env.DOCKER_CONFIG }} || DOCKER_CONFIG=$HOME/.docker
+          # Создаем папку для Docker CLI
+          DOCKER_CONFIG=$HOME/docker-config
           mkdir -p $DOCKER_CONFIG/cli-plugins
+
+          # Скачиваем Docker Compose и делаем его исполняемым
           curl -SL https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64  -o $DOCKER_CONFIG/cli-plugins/docker-compose
           chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+
+          # Делаем его доступным в PATH
+          export PATH="$DOCKER_CONFIG/cli-plugins:$PATH"
+
+          # Проверяем версию
           docker compose version
 
+      - name: 🧪 Debug: Env variables
+        run: |
+          echo "HOME: $HOME"
+          echo "PATH: $PATH"
+          echo "DOCKER_CONFIG: $DOCKER_CONFIG"
+          
       - name: 📦 Логин в Docker Hub
         uses: docker/login-action@v2
         with:
