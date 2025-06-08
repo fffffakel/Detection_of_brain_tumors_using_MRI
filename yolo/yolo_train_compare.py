@@ -72,7 +72,7 @@ class ModelTrainer:
 class ModelEvaluator:
     def __init__(self, model_path: str):
         # Инициализируем модель только один раз при создании экземпляра
-        self.model = YOLO(model_path)
+        self.model = YOLO(model_path).to('cpu')
 
     def evaluate(self, test_image_path: str, save_vis_dir: Optional[str] = None, prefix: str = "", device: str = "cpu") -> Dict[str, Any]:
         # Убедитесь, что device передается в метод model()

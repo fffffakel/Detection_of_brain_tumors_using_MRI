@@ -19,7 +19,7 @@ async def root():
 @app.post("/inference/")
 async def run_inference(
     folder_id: str = Query(..., description="ID папки (например, '007')"),
-    device: str = Query("cuda", description="Устройство для инференса: 'cpu' или 'cuda'")
+    device: str = Query("cpu", description="Устройство для инференса: 'cpu' или 'cuda'")
 ):
     logger.info(f"Запрос инференса для папки {folder_id} на {device}")
 

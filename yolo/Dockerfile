@@ -1,16 +1,18 @@
-FROM ultralytics/ultralytics:latest
+# Используем готовый CPU-образ от Ultralytics
+FROM ultralytics/ultralytics:latest-cpu
 
-RUN apt-get update && apt-get install -y \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
-
+# Рабочая директория
 WORKDIR /workspace
+
+# Копируем зависимости (если нужно что-то докачать)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем код
 COPY . .
 
-# Установим FastAPI и Uvicorn
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir fastapi uvicorn
-
+# Открываем порт для FastAPI
 EXPOSE 8001
 
+# Запуск сервера
 CMD ["uvicorn", "yolo.server:app", "--host", "0.0.0.0", "--port", "8001"]
