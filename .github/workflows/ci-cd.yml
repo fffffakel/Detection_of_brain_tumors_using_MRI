@@ -48,12 +48,12 @@ jobs:
           # Проверяем версию
           docker compose version
 
-      - name: 🧪 Debug: Env variables
+      - name: Test Env variables
         run: |
           echo "HOME: $HOME"
           echo "PATH: $PATH"
           echo "DOCKER_CONFIG: $DOCKER_CONFIG"
-          
+
       - name: 📦 Логин в Docker Hub
         uses: docker/login-action@v2
         with:
