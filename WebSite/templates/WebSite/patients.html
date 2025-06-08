@@ -1,4 +1,10 @@
 {% extends 'WebSite/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/patients.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="pats-container">
@@ -39,7 +45,7 @@
     <p class="no-patients-message">Пациенты отсутствуют.</p>
     {% endif %}
     
-    <a href="{% url 'home' %}" class="btn-link">На главную</a>
+    <a href="javascript:history.back()" class="btn-link">Назад</a>
 
 </div>
 {% endblock %}

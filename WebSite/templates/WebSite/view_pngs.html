@@ -1,121 +1,72 @@
 {% extends 'WebSite/base.html' %}
 {% load static %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/view_pngs.css' %}">
+{% endblock %}
+
 {% block title %}
 Просмотр срезов - {{ folder }}
 {% endblock %}
 
 {% block content %}
-<h1>Срезы: {{ folder }}</h1>
+<div class="page-container">
+    <h1 class="page-title">Срезы: <span class="folder-name">{{ folder }}</span></h1>
 
-{% if subfolders %}
-    <h2>Папки:</h2>
-    <div class="folder-buttons">
-        {% for url, name in subfolders %}
-            <a href="{% url 'view_pngs' url %}" class="folder-button">{{ name }}</a>
+    {% if subfolders %}
+        <div class="section-header">
+            <h2>Папки пациента:</h2>
+            <p>Выберите папку для просмотра её содержимого.</p>
+        </div>
+        <div class="folder-buttons-container">
+            {% for url, name in subfolders %}
+                <a href="{% url 'view_pngs' url %}" class="folder-button">{{ name }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="section-header">
+        <h2>Доступные срезы:</h2>
+        <p>Нажмите на изображение, чтобы просмотреть его в полном размере.</p>
+    </div>
+
+    {% if png_files %}
+    <div class="slices-grid">
+        {% for url, name in png_files %}
+            <div class="slice-card">
+                <a href="{{ url }}" target="_blank" rel="noopener noreferrer" class="slice-image-link">
+                    <img src="{{ url }}" alt="Срез: {{ name }}" class="slice-image">
+                </a>
+                <div class="slice-info">{{ name }}</div>
+            </div>
+        {% empty %}
+            <p class="no-slices-message">Нет доступных срезов для отображения в этой папке.</p>
         {% endfor %}
     </div>
-{% endif %}
 
-<style>
-    .folder-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    .folder-button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background-color 0.2s ease;
-    }
-    .folder-button:hover {
-        background-color: #45a049;
-    }
-
-    .slices-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: minmax(100px, auto);
-        gap: 15px;
-    }
-    .slice-item {
-        background: white;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .slice-image {
-        width: 100%;
-        height: auto;
-        border: 1px solid #ddd;
-        max-height: 150px;
-        object-fit: contain;
-    }
-    .slice-info {
-        margin-top: 8px;
-        text-align: center;
-        font-size: 14px;
-        word-break: break-word;
-    }
-    .pagination {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    .pagination a, .pagination span {
-        padding: 6px 12px;
-        background-color: #e9e9e9;
-        text-decoration: none;
-        color: #333;
-        border-radius: 3px;
-    }
-    .pagination .current {
-        background-color: #4CAF50;
-        color: white;
-        font-weight: bold;
-    }
-</style>
-
-{% if png_files %}
-<div class="slices-container">
-    {% for url, name in png_files %}
-        <div class="slice-item">
-            <img src="{{ url }}" alt="{{ name }}" class="slice-image">
-            <div class="slice-info">{{ name }}</div>
-        </div>
-    {% empty %}
-        <p>Нет доступных срезов для отображения.</p>
-    {% endfor %}
-</div>
-
-<div class="pagination">
-    {% if page_obj.has_previous %}
-        <a href="?page=1">« Первая</a>
-        <a href="?page={{ page_obj.previous_page_number }}">‹ Пред</a>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-            <span class="current">{{ num }}</span>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <a href="?page={{ num }}">{{ num }}</a>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-link">&laquo; Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">&lsaquo; Пред</a>
         {% endif %}
-    {% endfor %}
 
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">След ›</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}">Последняя »</a>
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="pagination-current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">След &rsaquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Последняя &raquo;</a>
+        {% endif %}
+    </div>
+    {% else %}
+        <p class="no-slices-message">Нет доступных срезов для отображения в этой папке.</p>
     {% endif %}
 </div>
-{% endif %}
-
+<a href="javascript:history.back()" class="btn-link">Назад</a>
 {% endblock %}

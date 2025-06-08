@@ -439,3 +439,254 @@ input[type="file"] {
 .submit-btn:active {
     transform: translateY(2px);
 }
+
+
+/* Определяем CSS-переменные для легкой кастомизации */
+:root {
+    --primary-color: #34495e; /* Основной синий */
+    --primary-dark-color: #2980b9;
+    --secondary-color: #2ecc71; /* Зеленый акцент */
+    --background-light: #f8f9fa;
+    --card-background: #ffffff;
+    --text-color-dark: #34495e;
+    --text-color-light: #7f8c8d;
+    --border-color: #e0e0e0;
+    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.12);
+    --spacing-unit: 15px;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color-dark);
+    background-color: var(--background-light);
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 2 * var(--spacing-unit);
+    background: var(--card-background);
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+}
+
+.page-title {
+    font-size: 2.5em;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2 * var(--spacing-unit);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: var(--spacing-unit);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.folder-name {
+    color: var(--secondary-color);
+}
+
+.section-header {
+    margin-top: 3 * var(--spacing-unit);
+    margin-bottom: var(--spacing-unit);
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 1.8em;
+    color: var(--text-color-dark);
+    margin-bottom: 0.5 * var(--spacing-unit);
+}
+
+.section-header p {
+    color: var(--text-color-light);
+    font-size: 0.95em;
+    margin-bottom: var(--spacing-unit);
+}
+
+/* Кнопки папок */
+.folder-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-unit);
+    justify-content: center; /* Центрируем кнопки */
+    margin-top: 2 * var(--spacing-unit);
+}
+
+.folder-button {
+    padding: var(--spacing-unit) 2 * var(--spacing-unit);
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.05em;
+    min-width: 120px; /* Чтобы кнопки были примерно одинакового размера */
+    text-align: center;
+    margin-bottom: 20px
+}
+
+.folder-button:hover {
+    background-color: var(--primary-dark-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Сетка срезов */
+.slices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Адаптивная сетка */
+    gap: 2 * var(--spacing-unit);
+    margin-top: 3 * var(--spacing-unit);
+}
+
+.slice-card {
+    background: var(--card-background);
+    padding: var(--spacing-unit);
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden; /* Скрываем выходящий контент */
+}
+
+.slice-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.slice-image-link {
+    display: block; /* Ссылка должна быть блочным элементом */
+    width: 100%;
+    max-height: 200px; /* Увеличена максимальная высота для лучшего просмотра */
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.slice-image {
+    width: 100%;
+    height: 100%; /* Убедитесь, что изображение занимает всю высоту контейнера */
+    object-fit: contain; /* Сохраняем пропорции, вмещая в контейнер */
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.slice-image:hover {
+    transform: scale(1.03); /* Небольшое увеличение при наведении */
+}
+
+.slice-info {
+    margin-top: var(--spacing-unit);
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--text-color-dark);
+    word-break: break-word; /* Перенос длинных слов */
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.no-slices-message {
+    text-align: center;
+    color: var(--text-color-light);
+    font-size: 1.1em;
+    margin-top: 3 * var(--spacing-unit);
+}
+
+/* Пагинация */
+.pagination {
+    margin-top: 3 * var(--spacing-unit);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px; /* Немного уменьшили отступ между элементами */
+    padding: var(--spacing-unit);
+    background: var(--card-background);
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+}
+
+.pagination-link, .pagination-current {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: var(--primary-color);
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 600;
+    border: 1px solid var(--border-color); /* Добавим тонкую границу */
+}
+
+.pagination-link:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.pagination-current {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    border-color: var(--primary-color); /* Граница для текущей страницы */
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .page-container {
+        margin: 20px auto;
+        padding: var(--spacing-unit);
+    }
+
+    .page-title {
+        font-size: 2em;
+    }
+
+    .section-header h2 {
+        font-size: 1.5em;
+    }
+
+    .folder-button {
+        padding: 8px 15px;
+        font-size: 0.95em;
+    }
+
+    .slices-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--spacing-unit);
+    }
+
+    .slice-image-link {
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.8em;
+    }
+
+    .section-header h2 {
+        font-size: 1.3em;
+    }
+
+    .folder-button {
+        min-width: unset; /* Убираем минимальную ширину для очень маленьких экранов */
+        flex-grow: 1; /* Кнопки будут заполнять доступное пространство */
+        margin-bottom: 20px;
+    }
+    
+    .slices-grid {
+        grid-template-columns: 1fr; /* Одна колонка на очень маленьких экранах */
+        gap: var(--spacing-unit);
+    }
+}
+
+.no-subfolders-message {
+    text-align: center;
+    color: var(--text-color-light);
+    font-size: 1.1em;
+    margin-top: 3 * var(--spacing-unit);
+}

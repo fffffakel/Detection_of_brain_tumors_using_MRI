@@ -11,3 +11,4 @@ uvicorn[standard]
 celery
 redis
 requests
+whitenoise[django]

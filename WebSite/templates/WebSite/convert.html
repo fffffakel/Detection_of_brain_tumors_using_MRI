@@ -1,4 +1,10 @@
 {% extends 'WebSite/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/convert.css' %}">
+{% endblock %}
 
 {% block title %}Загрузка пациента{% endblock %}
 
@@ -46,7 +52,7 @@
         </form>
 
     </div>
-            <a href="{% url 'home' %}" class="btn-link">На главную</a>
+            <a href="{% url 'home' %}" class="btn-link">Назад</a>
 
 
     <script>

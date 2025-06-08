@@ -1,4 +1,4 @@
-name: Django CI/CD
+name: Django CI/CD with Docker Compose
 
 on:
   push:
@@ -7,9 +7,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: brain-tutor
-  TEST_TAG: brain-tutor:ci-test
-  PROD_TAG: ${{ secrets.DOCKER_USERNAME }}/brain-tutor:latest
+  # Переменные окружения
   POSTGRES_DB: brain_tutor_db
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
@@ -19,72 +17,71 @@ env:
   REDIS_PORT: 6379
 
 jobs:
-  build-test-push:
+  build-test-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: 🔍 Checkout код
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: 🐳 Установка Docker
+        uses: addnab/docker-setup-action@v1
+        with:
+          install: "latest"
 
-    - name: Log in to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: 📦 Логин в Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Сборка тестового образа без пуша
-    - name: Build Docker image (for testing)
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: false
-        load: true
-        tags: ${{ env.TEST_TAG }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: 🛠️ Сборка образов через Docker Compose
+        run: |
+          docker compose -f docker-compose.yml build
 
-    # Создаем пользовательскую сеть для запуска контейнеров
-    - name: Create Docker network
-      run: docker network create cicd_network || echo "Network already exists"
+      - name: 🧪 Запуск тестовой БД и Redis
+        run: |
+          docker network create mynetwork || true
+          docker run -d --name db \
+            --network mynetwork \
+            -e POSTGRES_DB=$POSTGRES_DB \
+            -e POSTGRES_USER=$POSTGRES_USER \
+            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+            -p 5432:5432 \
+            postgres:15
 
-    # Запускаем Postgres и Redis локально в CI
-    - name: Start Postgres container
-      run: |
-        docker run -d --name postgres --network cicd_network \
-          -e POSTGRES_DB=${{ env.POSTGRES_DB }} \
-          -e POSTGRES_USER=${{ env.POSTGRES_USER }} \
-          -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} \
-          postgres:15
+          docker run -d --name redis \
+            --network mynetwork \
+            -p 6379:6379 \
+            redis:7
 
-    - name: Start Redis container
-      run: |
-        docker run -d --name redis --network cicd_network redis:7
+      - name: ⏱ Ждём, пока Postgres станет доступной
+        run: |
+          for i in {1..30}; do
+            docker exec db pg_isready -U $POSTGRES_USER && echo "Postgres ready" && break
+            echo "Ожидание Postgres..."
+            sleep 2
+          done
 
-    # Ждем, пока Postgres будет доступен
-    - name: Wait for Postgres
-      run: |
-        for i in {1..30}; do
-          docker exec postgres pg_isready -U ${{ env.POSTGRES_USER }} && break
-          echo "Waiting for postgres..."
-          sleep 1
-        done
+      - name: 🧹 Миграции и сборка статики
+        run: |
+          docker compose -f docker-compose.yml run --rm web python manage.py migrate
+          docker compose -f docker-compose.yml run --rm web python manage.py collectstatic --noinput
 
-    # Останавливаем и удаляем сервисы Postgres и Redis
-    - name: Clean up containers
-      run: |
-        docker stop postgres redis
-        docker rm postgres redis
-        docker network rm cicd_network || echo "Network removal failed or network doesn't exist"
+      - name: 🧪 Запуск тестов (опционально)
+        run: |
+          docker compose -f docker-compose.yml run --rm web python manage.py test
 
-    # Финальная сборка и пуш в Docker Hub
-    - name: Build and push production image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ env.PROD_TAG }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: 🚀 Пуш всех образов на Docker Hub
+        run: |
+          docker compose -f docker-compose.yml push
+
+      - name: 🧼 Очистка после тестов
+        if: always()
+        run: |
+          docker stop db redis || true
+          docker rm db redis || true
+          docker network rm mynetwork || true

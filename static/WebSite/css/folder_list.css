@@ -1,0 +1,97 @@
+/* Специфичные стили для folder_list.html */
+.page-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-size: 2.5em;
+    color: #34495e;
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.folder-name {
+    color: #2ecc71;
+}
+
+.section-header {
+    margin-top: 45px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 1.8em;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.section-header p {
+    color: #7f8c8d;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+}
+
+.folder-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.folder-button {
+    padding: 15px 30px;
+    background-color: #34495e;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.05em;
+    min-width: 120px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.folder-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.no-subfolders-message {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 1.1em;
+    margin-top: 45px;
+}
+
+.btn-link {
+    display: block;
+    text-align: center;
+    background-color: #7477a8;
+    color: white;
+    padding: 15px 25px;
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
+    font-size: 1.1rem;
+}
+.btn-link:hover {
+    background-color: #555;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}

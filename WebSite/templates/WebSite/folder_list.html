@@ -1,30 +1,34 @@
 {% extends 'WebSite/base.html' %}
 {% load static %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/folder_list.css' %}">
+{% endblock %}
+
 {% block title %}
 Выбор подпапки — {{ folder }}
 {% endblock %}
 
 {% block content %}
-<h1>Выбор подпапки для: {{ folder }}</h1>
+<div class="page-container">
+    <h1 class="page-title">Выбор подпапки для: <span class="folder-name">{{ folder }}</span></h1>
 
-{% if subfolders %}
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
-        {% for url, name in subfolders %}
-            <a href="{% url 'view_pngs' url %}" style="
-                display: inline-block;
-                padding: 10px 20px;
-                background-color: #4CAF50;
-                color: white;
-                text-decoration: none;
-                border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            ">
-                {{ name }}
-            </a>
-        {% endfor %}
-    </div>
-{% else %}
-    <p>Нет подпапок для отображения.</p>
-{% endif %}
+    {% if subfolders %}
+        <div class="section-header">
+            <h2>Доступные подпапки:</h2>
+            <p>Нажмите на подпапку, чтобы перейти к просмотру её содержимого.</p>
+        </div>
+        <div class="folder-buttons-container">
+            {% for url, name in subfolders %}
+                <a href="{% url 'view_pngs' url %}" class="folder-button">
+                    {{ name }}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-subfolders-message">Нет подпапок для отображения.</p>
+    {% endif %}
+</div>
+<a href="javascript:history.back()" class="btn-link">Назад</a>
 {% endblock %}

@@ -1,6 +1,11 @@
 {% extends 'WebSite/base.html' %}
 {% load static %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/home.css' %}">
+{% endblock %}
+
 {% block title %}Главная страница{% endblock %}
 
 {% block content %}

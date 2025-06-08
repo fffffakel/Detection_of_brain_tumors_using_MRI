@@ -28,7 +28,8 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/app
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
     ports:
       - "44444:8000"
     networks:

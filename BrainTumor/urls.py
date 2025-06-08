@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from django.contrib import admin
@@ -14,5 +13,5 @@ urlpatterns = [
     path('', include('WebSite.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += static(settings.STATIC_URL,
-                      document_root=os.path.join(BASE_DIR, 'static'))
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

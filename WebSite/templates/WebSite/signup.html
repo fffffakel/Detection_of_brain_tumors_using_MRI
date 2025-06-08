@@ -1,6 +1,11 @@
 {% extends 'WebSite/base.html' %}
 {% load static %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/signup.css' %}">
+{% endblock %}
+
 {% block title %}Регистрация{% endblock %}
 
 {% block content %}

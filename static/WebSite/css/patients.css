@@ -1,0 +1,87 @@
+/* === Стили для patients.html === */
+
+.pats-container {
+    padding: 30px;
+    background-color: #272a42;
+    text-align: center;
+}
+.title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.table-container {
+    margin-top: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+.patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.patient-table th,
+.patient-table td {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.patient-table th {
+    background-color: #7477a8;
+    color: #272a42;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.patient-table td {
+    background-color: #f9f9f9;
+    color: #272a42;
+}
+.patient-table tr:nth-child(even) td {
+    background-color: #7477a8;
+}
+.patient-table tr:hover {
+    background-color: #f0f5ff;
+    transition: background-color 0.3s ease;
+}
+.table-link {
+    color: #272a42;
+    text-decoration: none;
+    font-weight: 600;
+}
+.table-link:hover {
+    color: #d06d68;
+    text-decoration: underline;
+}
+.no-patients-message {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    font-style: italic;
+}
+.btn-link {
+    display: block;
+    text-align: center;
+    background-color: #7477a8;
+    color: white;
+    padding: 15px 25px;
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
+    font-size: 1.1rem;
+    width: fit-content;
+    margin: 40px auto 0;
+}
+.btn-link:hover {
+    background-color: #555;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}

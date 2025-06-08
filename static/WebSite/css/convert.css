@@ -1,0 +1,110 @@
+/* === Стили для convert.html === */
+
+.pats-container {
+    padding: 30px;
+    background-color: #272a42;
+    text-align: center;
+}
+.title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.upload-form {
+    background-color: #fff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    color: #333;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+}
+label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+textarea {
+    resize: vertical;
+}
+#nii-upload {
+    display: none;
+}
+.custom-file-upload {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #7477a8;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+.custom-file-upload:hover {
+    background-color: #d06d68;
+}
+.file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #555;
+    font-style: italic;
+}
+.submit-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #7477a8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #d06d68;
+}
+
+.btn-link {
+    display: block;
+    text-align: center;
+    background-color: #7477a8;
+    color: white;
+    padding: 15px 25px;
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
+    font-size: 1.1rem;
+}
+
+.btn-link:hover {
+    background-color: #555;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
