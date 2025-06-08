@@ -81,7 +81,11 @@ jobs:
           
       - name: 🏷 Определение тега Docker
         id: docker_tag
-        run: echo "TAG=$(if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then echo 'latest'; else echo '${GITHUB_REF##*/}'; fi)" >> $GITHUB_ENV
+        run: |
+          RAW_TAG=$(if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then echo "latest"; else echo "${GITHUB_REF##refs/heads/}"; fi)
+          SAFE_TAG=$(echo "$RAW_TAG" | tr '/' '-' | tr -cd 'a-zA-Z0-9_.-')
+          echo "TAG=$SAFE_TAG" >> $GITHUB_ENV
+
 
       - name: 🚀 Сборка и пуш образов с правильным тегом
         run: |
