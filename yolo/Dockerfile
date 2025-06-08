@@ -9,7 +9,7 @@ COPY . .
 
 # Установим FastAPI и Uvicorn
 RUN pip install --upgrade pip && \
-    pip install fastapi uvicorn
+    pip install --no-cache-dir fastapi uvicorn
 
 EXPOSE 8001
 

@@ -15,8 +15,6 @@ env:
   DATABASE_PORT: 5432
   REDIS_HOST: redis
   REDIS_PORT: 6379
-  IMAGE_NAME: braintumor
-  PROD_TAG: ${{ secrets.DOCKER_USERNAME }}/braintumor:latest
 
 jobs:
   build-test-deploy:
@@ -34,25 +32,12 @@ jobs:
 
       - name: ⚙️ Установка Docker Compose
         run: |
-          # Создаем папку для Docker CLI
           DOCKER_CONFIG=$HOME/docker-config
           mkdir -p $DOCKER_CONFIG/cli-plugins
-
-          # Скачиваем Docker Compose и делаем его исполняемым
           curl -SL https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64  -o $DOCKER_CONFIG/cli-plugins/docker-compose
           chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-
-          # Делаем его доступным в PATH
           export PATH="$DOCKER_CONFIG/cli-plugins:$PATH"
-
-          # Проверяем версию
           docker compose version
-
-      - name: Test Env variables
-        run: |
-          echo "HOME: $HOME"
-          echo "PATH: $PATH"
-          echo "DOCKER_CONFIG: $DOCKER_CONFIG"
 
       - name: 📦 Логин в Docker Hub
         uses: docker/login-action@v2
@@ -60,9 +45,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: 🧹 Очистка кэша и временных файлов
+        run: |
+          echo "Очистка временных файлов..."
+          sudo apt-get clean
+          sudo rm -rf /tmp/* ~/.cache/* ~/.docker/cache || true
+          docker system prune -af || true
+          df -h
+
       - name: 🛠️ Сборка всех сервисов из docker-compose.yml
         run: |
-          docker compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml build --no-cache
 
       - name: 🧪 Запуск Postgres и Redis для тестирования
         run: |
@@ -83,7 +76,7 @@ jobs:
       - name: ⏱ Ждём, пока Postgres станет доступной
         run: |
           for i in {1..30}; do
-            docker exec db pg_isready -U $POSTGRES_USER && echo "Postgres ready" && break
+            docker exec db pg_isready -U $POSTGRES_USER && echo "Postgres готов" && break
             echo "Ожидание Postgres..."
             sleep 2
           done
