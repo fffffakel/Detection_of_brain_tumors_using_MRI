@@ -27,10 +27,10 @@ jobs:
       - name: 🔍 Checkout код
         uses: actions/checkout@v3
 
-      - name: 🐳 Настройка Docker
+      - name: 🐳 Настройка Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: ⚙️ Установка Docker Compose
+      - name: ⚙️ Установка Docker Compose CLI
         run: |
           DOCKER_CONFIG=$HOME/docker-config
           mkdir -p $DOCKER_CONFIG/cli-plugins
@@ -48,7 +48,7 @@ jobs:
       - name: 🧹 Очистка кэша и временных файлов
         run: |
           echo "Очистка временных файлов..."
-          sudo apt-get clean
+          sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* ~/.cache/pip || true
           sudo rm -rf /tmp/* ~/.cache/* ~/.docker/cache || true
           docker system prune -af || true
           df -h
@@ -60,6 +60,10 @@ jobs:
       - name: 🧪 Запуск Postgres и Redis для тестирования
         run: |
           docker network create mynetwork || true
+
+          docker stop db redis || true
+          docker rm db redis || true
+
           docker run -d --name db \
             --network mynetwork \
             -e POSTGRES_DB=$POSTGRES_DB \
@@ -91,6 +95,7 @@ jobs:
           docker compose -f docker-compose.yml run --rm web python manage.py test
 
       - name: 🚀 Пуш всех образов на Docker Hub
+        if: github.ref == 'refs/heads/main'
         run: |
           docker compose -f docker-compose.yml push
 
