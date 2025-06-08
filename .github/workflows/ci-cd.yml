@@ -7,7 +7,6 @@ on:
     branches: [main]
 
 env:
-  # Переменные окружения
   POSTGRES_DB: brain_tutor_db
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
@@ -57,25 +56,9 @@ jobs:
         run: |
           docker compose -f docker-compose.yml build --no-cache
 
-      - name: 🧪 Запуск Postgres и Redis для тестирования
+      - name: 🧪 Поднимаем db и redis через docker compose
         run: |
-          docker network create mynetwork || true
-
-          docker stop db redis || true
-          docker rm db redis || true
-
-          docker run -d --name db \
-            --network mynetwork \
-            -e POSTGRES_DB=$POSTGRES_DB \
-            -e POSTGRES_USER=$POSTGRES_USER \
-            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-            -p 5432:5432 \
-            postgres:15
-
-          docker run -d --name redis \
-            --network mynetwork \
-            -p 6379:6379 \
-            redis:7
+          docker compose -f docker-compose.yml up -d db redis
 
       - name: ⏱ Ждём, пока Postgres станет доступной
         run: |
@@ -84,11 +67,6 @@ jobs:
             echo "Ожидание Postgres..."
             sleep 2
           done
-
-      - name: 🧹 Миграции и сборка статики
-        run: |
-          docker compose -f docker-compose.yml run --rm web python manage.py migrate
-          docker compose -f docker-compose.yml run --rm web python manage.py collectstatic --noinput
 
       - name: 🧪 Тестирование (опционально)
         run: |
@@ -99,9 +77,7 @@ jobs:
         run: |
           docker compose -f docker-compose.yml push
 
-      - name: 🧼 Очистка после тестов
+      - name: 🧼 Полная остановка и удаление всех контейнеров (включая db и redis)
         if: always()
         run: |
-          docker stop db redis || true
-          docker rm db redis || true
-          docker network rm mynetwork || true
+          docker compose -f docker-compose.yml down -v --remove-orphans || true
