@@ -78,10 +78,14 @@ jobs:
 
           # Запуск тестов
           docker compose exec -T web python manage.py test
+          
+      - name: 🏷 Определение тега Docker
+        id: docker-tag
+        run: echo "TAG=$(if [ '${{ github.ref }}' == 'refs/heads/main' ]; then echo 'latest'; else echo 'dev'; fi)" >> $GITHUB_ENV
 
-      - name: 🚀 Пуш всех образов на Docker Hub
-        if: github.ref == 'refs/heads/main'
+      - name: 🚀 Сборка и пуш образов с правильным тегом
         run: |
+          docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml push
 
       - name: 🧼 Полная остановка и удаление всех контейнеров (включая db и redis)
