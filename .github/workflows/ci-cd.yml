@@ -15,6 +15,8 @@ env:
   DATABASE_PORT: 5432
   REDIS_HOST: redis
   REDIS_PORT: 6379
+  IMAGE_NAME: braintumor
+  PROD_TAG: ${{ secrets.DOCKER_USERNAME }}/braintumor:latest
 
 jobs:
   build-test-deploy:
@@ -27,10 +29,16 @@ jobs:
       - name: 🔍 Checkout код
         uses: actions/checkout@v3
 
-      - name: 🐳 Установка Docker
-        uses: addnab/docker-setup-action@v1
-        with:
-          install: "latest"
+      - name: 🐳 Настройка Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: ⚙️ Установка Docker Compose
+        run: |
+          DOCKER_CONFIG=${{ runner.env.DOCKER_CONFIG }} || DOCKER_CONFIG=$HOME/.docker
+          mkdir -p $DOCKER_CONFIG/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64  -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+          docker compose version
 
       - name: 📦 Логин в Docker Hub
         uses: docker/login-action@v2
@@ -38,11 +46,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: 🛠️ Сборка образов через Docker Compose
+      - name: 🛠️ Сборка всех сервисов из docker-compose.yml
         run: |
           docker compose -f docker-compose.yml build
 
-      - name: 🧪 Запуск тестовой БД и Redis
+      - name: 🧪 Запуск Postgres и Redis для тестирования
         run: |
           docker network create mynetwork || true
           docker run -d --name db \
@@ -71,7 +79,7 @@ jobs:
           docker compose -f docker-compose.yml run --rm web python manage.py migrate
           docker compose -f docker-compose.yml run --rm web python manage.py collectstatic --noinput
 
-      - name: 🧪 Запуск тестов (опционально)
+      - name: 🧪 Тестирование (опционально)
         run: |
           docker compose -f docker-compose.yml run --rm web python manage.py test
 
