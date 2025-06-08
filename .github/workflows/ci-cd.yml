@@ -56,21 +56,28 @@ jobs:
         run: |
           docker compose -f docker-compose.yml build --no-cache
 
-      - name: 🧪 Поднимаем db и redis через docker compose
+      - name: 🧪 Тестирование с запуском всех сервисов
         run: |
-          docker compose -f docker-compose.yml up -d db redis
+          # Поднимаем все сервисы в фоне
+          docker compose -f docker-compose.yml up -d
 
-      - name: ⏱ Ждём, пока Postgres станет доступной
-        run: |
-          for i in {1..30}; do
-            docker exec db pg_isready -U $POSTGRES_USER && echo "Postgres готов" && break
-            echo "Ожидание Postgres..."
-            sleep 2
+          # Ждем, пока БД станет доступной (можно увеличить таймаут при необходимости)
+          echo "Ожидание доступности PostgreSQL..."
+          timeout=30
+          while ! docker exec $(docker compose ps -q db) pg_isready -U postgres; do
+            sleep 1
+            timeout=$((timeout - 1))
+            if [ $timeout -le 0 ]; then
+              echo "PostgreSQL не стал доступным в течение 30 секунд"
+              exit 1
+            fi
           done
 
-      - name: 🧪 Тестирование (опционально)
-        run: |
-          docker compose -f docker-compose.yml run --rm web python manage.py test
+          # Применяем миграции (если нужно)
+          docker compose exec -T web python manage.py migrate --noinput
+
+          # Запуск тестов
+          docker compose exec -T web python manage.py test
 
       - name: 🚀 Пуш всех образов на Docker Hub
         if: github.ref == 'refs/heads/main'
