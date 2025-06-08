@@ -80,8 +80,8 @@ jobs:
           docker compose exec -T web python manage.py test
           
       - name: 🏷 Определение тега Docker
-        id: docker-tag
-        run: echo "TAG=$(if [ '${{ github.ref }}' == 'refs/heads/main' ]; then echo 'latest'; else echo 'dev'; fi)" >> $GITHUB_ENV
+        id: docker_tag
+        run: echo "TAG=$(if [[ '${{ github.ref }}' == 'refs/heads/main' ]]; then echo 'latest'; else echo '${GITHUB_REF##*/}'; fi)" >> $GITHUB_ENV
 
       - name: 🚀 Сборка и пуш образов с правильным тегом
         run: |
