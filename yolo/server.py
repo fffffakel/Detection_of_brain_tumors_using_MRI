@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 import os
 import logging
-from yolo.yolo_train_compare import InferencePipeline 
+from yolo_train_compare import InferencePipeline 
 import torch
 
 app = FastAPI()
