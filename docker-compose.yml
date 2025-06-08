@@ -21,7 +21,7 @@ services:
 
   web:
     build: .
-    image: your_dockerhub_username/web:${TAG}
+    image: ffffakel17/web:${TAG}
     restart: always
     depends_on:
       - db
@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.celery
-    image: your_dockerhub_username/celery:${TAG}
+    image: ffffakel17/celery:${TAG}
     restart: always
     container_name: django_celery
     depends_on:
@@ -55,7 +55,7 @@ services:
 
   yoloserver:
     build: ./yolo
-    image: your_dockerhub_username/yoloserver:${TAG}
+    image: ffffakel17/yoloserver:${TAG}
     container_name: yoloserver
     ports:
       - "8001:8001"
