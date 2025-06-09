@@ -99,32 +99,31 @@ jobs:
         run: |
           docker compose -f docker-compose.yml push
           
-      - name: Установка SSH ключа для деплоя
+      - name: 🤝 Деплой на сервер по SSH (только образы из Docker Hub)
+        if: github.ref == 'refs/heads/main'
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: 🤝 Деплой на сервер по SSH (только образы из Docker Hub)
+      
+      - name: 🚀 Выполнение деплоя по SSH
         env:
-           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-           SSH_USER: ${{ secrets.SSH_USER }}
-           SSH_HOST: ${{ secrets.SSH_HOST }}
-
-        if: github.ref == 'refs/heads/main'
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          ssh -o StrictHostKeyChecking=no -p 4444 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          echo "📡 Подключаемся к $SSH_USER@$SSH_HOST"
+          ssh -o StrictHostKeyChecking=no -p 4444 "$SSH_USER@$SSH_HOST" << 'EOF'
             set -e
             cd ~/workspace/BrainRot
-
+      
             echo "🧹 Остановка текущих контейнеров"
             docker compose down
-
+      
             echo "📦 Получение новых образов из Docker Hub"
             docker compose pull
-
+      
             echo "🚀 Перезапуск в фоне"
             docker compose up -d
-
+      
             echo "✅ Деплой завершён"
           EOF
        
