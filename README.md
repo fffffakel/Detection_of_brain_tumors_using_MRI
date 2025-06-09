@@ -70,7 +70,7 @@
 
    ```
 
-3. Инициализировать БД своими значениями из .env (YOUR_DB_NAME, YOUR_DB_USER и YOUR_DB_PASSWORD):
+3. Инициализировать БД в файле init.sql своими значениями из .env (YOUR_DB_NAME, YOUR_DB_USER и YOUR_DB_PASSWORD):
 
    ```sql
    -- Инициализация базы данных (PostgreSQL)
