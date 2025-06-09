@@ -98,13 +98,21 @@ jobs:
       - name: 🚀 Сборка и пуш образов с правильным тегом
         run: |
           docker compose -f docker-compose.yml push
+          
+      - name: Установка SSH ключа для деплоя
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: 🤝 Деплой на сервер по SSH (только образы из Docker Hub)
+        env:
+           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+           SSH_USER: ${{ secrets.SSH_USER }}
+           SSH_HOST: ${{ secrets.SSH_HOST }}
+
         if: github.ref == 'refs/heads/main'
         run: |
-          echo "$SSH_PRIVATE_KEY" > key.pem
-          chmod 600 key.pem
-          ssh -o StrictHostKeyChecking=no -i key.pem -p 4444 $SSH_USER@37.193.252.134 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -p 4444 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
             cd ~/workspace/BrainRot
 
@@ -119,11 +127,7 @@ jobs:
 
             echo "✅ Деплой завершён"
           EOF
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-
+       
       - name: 🧼 Полная остановка и удаление всех контейнеров (включая db и redis)
         if: always()
         run: |
