@@ -59,6 +59,18 @@ jobs:
           SAFE_TAG=$(echo "$RAW_TAG" | tr '/' '-' | tr -cd 'a-zA-Z0-9_.-')
           echo "TAG=$SAFE_TAG" >> $GITHUB_ENV
 
+      - name: Create .env file
+        run: |
+          echo "POSTGRES_DB=brain_tutor_db" >> .env
+          echo "POSTGRES_USER=postgres" >> .env
+          echo "POSTGRES_PASSWORD=postgres" >> .env
+          echo "DATABASE_HOST=db" >> .env
+          echo "DATABASE_PORT=5432" >> .env
+          echo "REDIS_HOST=redis" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "TAG=latest" >> .env
+
+
       - name: 🛠️ Сборка всех сервисов из docker-compose.yml
         run: |
           docker compose -f docker-compose.yml build --no-cache
