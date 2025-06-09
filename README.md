@@ -37,7 +37,7 @@
    cd Detection_of_brain_tumors_using_MRI
    ```
 
-2. Скопировать пример окружения и заполнить `.env`:
+2. Скопировать пример окружения и заполнить `.env` своими значениями:
 
    ```bash
    cp env.example .env
@@ -51,19 +51,18 @@
    POSTGRES_DB=YOUR_DB_NAME
    POSTGRES_USER=YOUR_DB_USER
    POSTGRES_PASSWORD=YOUR_DB_PASSWORD
-   DATABASE_HOST=YOUR_DB_HOST
-   DATABASE_PORT=YOUR_DB_PORT
+   DATABASE_HOST=db
+   DATABASE_PORT=5432
+
 
    # Django
-   DJANGO_SETTINGS_MODULE=config.settings.production
-
    DEBUG=False
 
    # Redis / Celery
-   REDIS_HOST=YOUR_REDIS_HOST
-   REDIS_PORT=YOUR_REDIS_PORT
-   CELERY_BROKER_URL=redis://YOUR_REDIS_HOST:YOUR_REDIS_PORT/0
-   CELERY_RESULT_BACKEND=redis://YOUR_REDIS_HOST:YOUR_REDIS_PORT/0
+   REDIS_HOST=redis
+   REDIS_PORT=6379
+   CELERY_BROKER_URL=redis://redis:6379/0
+   CELERY_RESULT_BACKEND=redis://redis:6379/0
 
    # Пути к модели
    BEST_MODEL_PATH=./yolo/best.pt
@@ -71,18 +70,18 @@
 
    ```
 
-3. Инициализация БД:
+3. Инициализировать БД своими значениями из .env (YOUR_DB_NAME, YOUR_DB_USER и YOUR_DB_PASSWORD):
 
    ```sql
    -- Инициализация базы данных (PostgreSQL)
-   CREATE DATABASE IF NOT EXISTS your_database;
-   CREATE USER your_user WITH PASSWORD 'your_password';
-   ALTER ROLE your_user SET client_encoding TO 'utf8';
-   ALTER ROLE your_user SET default_transaction_isolation TO 'read committed';
-   ALTER ROLE your_user SET timezone TO 'UTC';
-   GRANT ALL PRIVILEGES ON DATABASE your_database TO your_user;
+   CREATE DATABASE IF NOT EXISTS YOUR_DB_NAME;
+   CREATE USER YOUR_DB_USER WITH PASSWORD 'YOUR_DB_PASSWORD';
+   ALTER ROLE YOUR_DB_USER SET client_encoding TO 'utf8';
+   ALTER ROLE YOUR_DB_USER SET default_transaction_isolation TO 'read committed';
+   ALTER ROLE YOUR_DB_USER SET timezone TO 'UTC';
+   GRANT ALL PRIVILEGES ON DATABASE YOUR_DB_NAME TO YOUR_DB_USER;
 
-   \connect your_database
+   \connect YOUR_DB_NAME
 
    CREATE TABLE IF NOT EXISTS patients (
        id SERIAL PRIMARY KEY,
@@ -102,9 +101,15 @@
    - **В Docker**
 
      ```bash
-     docker compose up --build -f docker-compose-example.yml
+     docker compose -f docker-compose-example.yml up --build
 
      ```
+
+5. Переход к сайту:
+
+   - **В любом браузере**
+
+   [http://localhost:44444/](http://localhost:44444/)
 
 ---
 
