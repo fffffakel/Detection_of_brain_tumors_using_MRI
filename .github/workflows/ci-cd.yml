@@ -1,0 +1,93 @@
+name: Django CI/CD with Docker Compose
+
+on:
+  push:
+    branches: [main, dev/*]
+  pull_request:
+    branches: [main]
+
+env:
+  POSTGRES_DB: brain_tutor_db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  DATABASE_HOST: db
+  DATABASE_PORT: 5432
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: 🔍 Checkout код
+        uses: actions/checkout@v3
+
+      - name: 🐳 Настройка Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: ⚙️ Установка Docker Compose CLI
+        run: |
+          DOCKER_CONFIG=$HOME/docker-config
+          mkdir -p $DOCKER_CONFIG/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64  -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+          export PATH="$DOCKER_CONFIG/cli-plugins:$PATH"
+          docker compose version
+
+      - name: 📦 Логин в Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🧹 Очистка кэша и временных файлов
+        run: |
+          echo "Очистка временных файлов..."
+          sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* ~/.cache/pip || true
+          sudo rm -rf /tmp/* ~/.cache/* ~/.docker/cache || true
+          docker system prune -af || true
+          df -h
+
+      - name: 🏷 Определение тега Docker
+        id: docker_tag
+        run: |
+          RAW_TAG=$(if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then echo "latest"; else echo "${GITHUB_REF##refs/heads/}"; fi)
+          SAFE_TAG=$(echo "$RAW_TAG" | tr '/' '-' | tr -cd 'a-zA-Z0-9_.-')
+          echo "TAG=$SAFE_TAG" >> $GITHUB_ENV
+
+      - name: 🛠️ Сборка всех сервисов из docker-compose.yml
+        run: |
+          docker compose -f docker-compose.yml build --no-cache
+
+      - name: 🧪 Тестирование с запуском всех сервисов
+        run: |
+          # Поднимаем все сервисы в фоне
+          docker compose -f docker-compose.yml up -d
+
+          # Ждем, пока БД станет доступной (можно увеличить таймаут при необходимости)
+          echo "Ожидание доступности PostgreSQL..."
+          timeout=30
+          while ! docker exec $(docker compose ps -q db) pg_isready -U postgres; do
+            sleep 1
+            timeout=$((timeout - 1))
+            if [ $timeout -le 0 ]; then
+              echo "PostgreSQL не стал доступным в течение 30 секунд"
+              exit 1
+            fi
+          done
+          docker compose exec -T web python manage.py migrate --noinput
+          # Запуск тестов
+          docker compose exec -T web python manage.py test
+
+      - name: 🚀 Сборка и пуш образов с правильным тегом
+        run: |
+          docker compose -f docker-compose.yml push
+
+      - name: 🧼 Полная остановка и удаление всех контейнеров (включая db и redis)
+        if: always()
+        run: |
+          docker compose -f docker-compose.yml down -v --remove-orphans || true

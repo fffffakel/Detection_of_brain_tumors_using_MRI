@@ -1,0 +1,692 @@
+/* base.html*/
+
+body {
+    margin: 0;
+    padding-top: 100px;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background-color: #7477a8;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+.navbar-left,
+.navbar-center,
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 90px;
+}
+
+.site-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.username {
+    margin-right: 15px;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.3); /* Более заметный фон */
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 1rem;
+    color: #fff; /* Белый текст для контраста */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень для выделения */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.username:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Подсветка при ховере */
+    color: #7477a8; /* Цвет текста в ховере */
+}
+
+.logout-btn {
+    background-color: #f18f88;  /* Исходный цвет кнопки */
+    color: white;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень для кнопки */
+}   
+
+.logout-btn:hover {
+    background-color: #d06d68;  /* Цвет на ховер */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Увеличиваем тень при ховере */
+}
+
+.login-btn {
+    background-color: #7477a8;  /* Исходный цвет кнопки */
+    color: white;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень для кнопки */
+}
+
+.login-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px); /* Легкое поднятие кнопки */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Усиленная тень при ховере */
+}
+
+.inactive {
+    background-color: transparent; /* Прозрачный фон */
+    color: transparent;  /* Прозрачный текст */
+    pointer-events: none; /* Блокируем клики */
+    text-decoration: none; /* Убираем подчеркивание */
+    box-shadow: none; /* Убираем тень */
+}
+
+/* Ховер-эффект на неактивной кнопке */
+.inactive:hover {
+    background-color: transparent; /* Прозрачный фон на ховер */
+    color: transparent;  /* Прозрачный текст на ховер */
+    box-shadow: none; /* Убираем тень на ховер */
+}
+
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;       /* по горизонтали */
+    justify-content: center;   /* по вертикали */
+    min-height: calc(100vh - 100px); /* весь экран минус шапка */
+    text-align: center;
+    background-color: #272a42;
+}
+
+/* home.html */
+.welcome-text {
+    font-size: 1.5rem;              /* Сделаем текст немного крупнее */
+    font-weight: 600;               /* Жирный шрифт для акцента */
+    color: #ffffff;                /* Цвет, гармонирующий с шапкой */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.05); /* Тень для текста */
+    margin-bottom: 40px;           /* Добавим немного больше пространства снизу */
+    text-align: center;            /* Центрируем текст */
+    line-height: 1.4;              /* Межстрочный интервал для лучшей читаемости */
+    transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out; /* Плавные переходы */
+}
+
+
+
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.btn-link {
+    display: block;
+    text-align: center;
+    background-color: #7477a8; /* Цвет, как в шапке */
+    color: white;              /* Белый текст для контраста */
+    padding: 15px 25px;        /* Увеличил размер кнопок */
+    text-decoration: none;
+    border-radius: 25px;       /* Сделаем кнопки с более круглыми углами */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Легкая тень */
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
+    font-size: 1.1rem;
+}
+
+.btn-link:hover {
+    background-color: #555;    /* Цвет фона при ховере (потемнение) */
+    transform: translateY(-3px); /* Немного приподнимем кнопку */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Более заметная тень */
+}
+
+/* Кнопки для неавторизованных */
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* Логин */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирует элементы по горизонтали */
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.login-form label {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.login-form input {
+    width: 100%;
+    max-width: 250px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center; /* если хочешь текст внутри тоже по центру */
+}
+
+.login-form-button {
+    background-color: #7477a8;
+    color: white;
+    font-weight: 600;
+    padding: 10px 15px;
+    border-radius: 25px;
+    margin-top: 5px;
+    width: 100%;
+    max-width: 280px;
+    border: none;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.login-form-button:hover {
+    background-color: #555; /* Потемнение на ховере */
+    transform: translateY(-3px); /* Немного приподнимем кнопку */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Более заметная тень */
+}
+
+.registration-link p {
+    color: white;
+    margin-top: 20px;
+}
+
+.registration-link a {
+    color: #f18f88;
+    font-weight: 600;
+    text-decoration: none; /* Убираем подчеркивание */
+    transition: color 0.3s ease;
+}
+
+.registration-link a:hover {
+    color: #d06d68; /* Цвет при ховере */
+}
+
+/* Сообщения (ошибки, инфо и т.д.) */
+.messages {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.messages li {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Цвета для разных типов сообщений (если у message есть .error, .success и т.д.) */
+.messages li.error {
+    background-color: rgba(220, 20, 60, 0.8);
+}
+
+.messages li.success {
+    background-color: rgba(34, 139, 34, 0.8);
+}
+
+/* Пациенты */
+
+.pats-container {
+    padding: 30px;
+    background-color: #272a42;
+    text-align: center;
+
+}
+
+.title {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.table-container {
+    margin-top: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.patient-table th, .patient-table td {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.patient-table th {
+    background-color: #7477a8;
+    color: #272a42;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.patient-table td {
+    background-color: #f9f9f9;
+    color: #272a42;
+}
+
+.patient-table tr:nth-child(even) td {
+    background-color: #7477a8;
+}
+
+.patient-table tr:hover {
+    background-color: #f0f5ff;
+    transition: background-color 0.3s ease;
+}
+
+.table-link {
+    color: #272a42;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.table-link:hover {
+    color: #d06d68;
+    text-decoration: underline;
+}
+
+.no-patients-message {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* Конвертор */
+
+.upload-form {
+    background-color: #fff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.upload-form .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.upload-form label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.upload-form input[type="text"],
+.upload-form input[type="number"],
+.upload-form select,
+.upload-form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.upload-form textarea {
+    resize: vertical;
+}
+
+#nii-upload {
+    display: none;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #7477a8;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #d06d68;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #555;
+    font-style: italic;
+}
+
+.submit-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #7477a8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #d06d68;
+}
+
+.submit-btn:active {
+    transform: translateY(2px);
+}
+
+
+/* Определяем CSS-переменные для легкой кастомизации */
+:root {
+    --primary-color: #34495e; /* Основной синий */
+    --primary-dark-color: #2980b9;
+    --secondary-color: #2ecc71; /* Зеленый акцент */
+    --background-light: #f8f9fa;
+    --card-background: #ffffff;
+    --text-color-dark: #34495e;
+    --text-color-light: #7f8c8d;
+    --border-color: #e0e0e0;
+    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.12);
+    --spacing-unit: 15px;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color-dark);
+    background-color: var(--background-light);
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 2 * var(--spacing-unit);
+    background: var(--card-background);
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+}
+
+.page-title {
+    font-size: 2.5em;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2 * var(--spacing-unit);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: var(--spacing-unit);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.folder-name {
+    color: var(--secondary-color);
+}
+
+.section-header {
+    margin-top: 3 * var(--spacing-unit);
+    margin-bottom: var(--spacing-unit);
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 1.8em;
+    color: var(--text-color-dark);
+    margin-bottom: 0.5 * var(--spacing-unit);
+}
+
+.section-header p {
+    color: var(--text-color-light);
+    font-size: 0.95em;
+    margin-bottom: var(--spacing-unit);
+}
+
+/* Кнопки папок */
+.folder-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-unit);
+    justify-content: center; /* Центрируем кнопки */
+    margin-top: 2 * var(--spacing-unit);
+}
+
+.folder-button {
+    padding: var(--spacing-unit) 2 * var(--spacing-unit);
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.05em;
+    min-width: 120px; /* Чтобы кнопки были примерно одинакового размера */
+    text-align: center;
+    margin-bottom: 20px
+}
+
+.folder-button:hover {
+    background-color: var(--primary-dark-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Сетка срезов */
+.slices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Адаптивная сетка */
+    gap: 2 * var(--spacing-unit);
+    margin-top: 3 * var(--spacing-unit);
+}
+
+.slice-card {
+    background: var(--card-background);
+    padding: var(--spacing-unit);
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden; /* Скрываем выходящий контент */
+}
+
+.slice-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.slice-image-link {
+    display: block; /* Ссылка должна быть блочным элементом */
+    width: 100%;
+    max-height: 200px; /* Увеличена максимальная высота для лучшего просмотра */
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.slice-image {
+    width: 100%;
+    height: 100%; /* Убедитесь, что изображение занимает всю высоту контейнера */
+    object-fit: contain; /* Сохраняем пропорции, вмещая в контейнер */
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.slice-image:hover {
+    transform: scale(1.03); /* Небольшое увеличение при наведении */
+}
+
+.slice-info {
+    margin-top: var(--spacing-unit);
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--text-color-dark);
+    word-break: break-word; /* Перенос длинных слов */
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.no-slices-message {
+    text-align: center;
+    color: var(--text-color-light);
+    font-size: 1.1em;
+    margin-top: 3 * var(--spacing-unit);
+}
+
+/* Пагинация */
+.pagination {
+    margin-top: 3 * var(--spacing-unit);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px; /* Немного уменьшили отступ между элементами */
+    padding: var(--spacing-unit);
+    background: var(--card-background);
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+}
+
+.pagination-link, .pagination-current {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: var(--primary-color);
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 600;
+    border: 1px solid var(--border-color); /* Добавим тонкую границу */
+}
+
+.pagination-link:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.pagination-current {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    border-color: var(--primary-color); /* Граница для текущей страницы */
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .page-container {
+        margin: 20px auto;
+        padding: var(--spacing-unit);
+    }
+
+    .page-title {
+        font-size: 2em;
+    }
+
+    .section-header h2 {
+        font-size: 1.5em;
+    }
+
+    .folder-button {
+        padding: 8px 15px;
+        font-size: 0.95em;
+    }
+
+    .slices-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--spacing-unit);
+    }
+
+    .slice-image-link {
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.8em;
+    }
+
+    .section-header h2 {
+        font-size: 1.3em;
+    }
+
+    .folder-button {
+        min-width: unset; /* Убираем минимальную ширину для очень маленьких экранов */
+        flex-grow: 1; /* Кнопки будут заполнять доступное пространство */
+        margin-bottom: 20px;
+    }
+    
+    .slices-grid {
+        grid-template-columns: 1fr; /* Одна колонка на очень маленьких экранах */
+        gap: var(--spacing-unit);
+    }
+}
+
+.no-subfolders-message {
+    text-align: center;
+    color: var(--text-color-light);
+    font-size: 1.1em;
+    margin-top: 3 * var(--spacing-unit);
+}

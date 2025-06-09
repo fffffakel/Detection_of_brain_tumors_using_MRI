@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    networks:
+      - mynetwork
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    image: ffffakel17/web:${TAG}
+    restart: always
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+    ports:
+      - "44444:8000"
+    networks:
+      - mynetwork
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: ffffakel17/celery:${TAG}
+    restart: always
+    container_name: django_celery
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - ./media:/app/media
+    networks:
+      - mynetwork
+
+  yoloserver:
+    build: ./yolo
+    image: ffffakel17/yoloserver:${TAG}
+    container_name: yoloserver
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./media:/workspace/media  # доступ к /media, если YOLO это нужно явно
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  postgres_data:

@@ -1,0 +1,72 @@
+{% extends 'WebSite/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/view_pngs.css' %}">
+{% endblock %}
+
+{% block title %}
+Просмотр срезов - {{ folder }}
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h1 class="page-title">Срезы: <span class="folder-name">{{ folder }}</span></h1>
+
+    {% if subfolders %}
+        <div class="section-header">
+            <h2>Папки пациента:</h2>
+            <p>Выберите папку для просмотра её содержимого.</p>
+        </div>
+        <div class="folder-buttons-container">
+            {% for url, name in subfolders %}
+                <a href="{% url 'view_pngs' url %}" class="folder-button">{{ name }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="section-header">
+        <h2>Доступные срезы:</h2>
+        <p>Нажмите на изображение, чтобы просмотреть его в полном размере.</p>
+    </div>
+
+    {% if png_files %}
+    <div class="slices-grid">
+        {% for url, name in png_files %}
+            <div class="slice-card">
+                <a href="{{ url }}" target="_blank" rel="noopener noreferrer" class="slice-image-link">
+                    <img src="{{ url }}" alt="Срез: {{ name }}" class="slice-image">
+                </a>
+                <div class="slice-info">{{ name }}</div>
+            </div>
+        {% empty %}
+            <p class="no-slices-message">Нет доступных срезов для отображения в этой папке.</p>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-link">&laquo; Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">&lsaquo; Пред</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="pagination-current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">След &rsaquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Последняя &raquo;</a>
+        {% endif %}
+    </div>
+    {% else %}
+        <p class="no-slices-message">Нет доступных срезов для отображения в этой папке.</p>
+    {% endif %}
+</div>
+<a href="javascript:history.back()" class="btn-link">Назад</a>
+{% endblock %}

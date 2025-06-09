@@ -1,0 +1,192 @@
+/* === Стили для view_pngs.html === */
+
+.page-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-size: 2.5em;
+    color: #34495e;
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.folder-name {
+    color: #2ecc71;
+}
+
+.section-header {
+    margin-top: 45px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 1.8em;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.section-header p {
+    color: #7f8c8d;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+}
+
+/* Кнопки папок */
+.folder-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.folder-button {
+    padding: 15px 30px;
+    background-color: #34495e;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.05em;
+    min-width: 120px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.folder-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+/* Сетка срезов */
+.slices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.slice-card {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.slice-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.slice-image-link {
+    display: block;
+    width: 100%;
+    max-height: 200px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.slice-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.slice-image:hover {
+    transform: scale(1.03);
+}
+
+.slice-info {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #34495e;
+    word-break: break-word;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* Сообщение об отсутствии срезов */
+.no-slices-message {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 1.1em;
+    margin-top: 45px;
+}
+
+/* Пагинация */
+.pagination {
+    margin-top: 45px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.pagination-link,
+.pagination-current {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #34495e;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 600;
+    border: 1px solid #e0e0e0;
+}
+
+.pagination-link:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+.pagination-current {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+    border-color: #34495e;
+}
+
+.btn-link {
+    display: block;
+    text-align: center;
+    background-color: #7477a8;
+    color: white;
+    padding: 15px 25px;
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
+    font-size: 1.1rem;
+}
+.btn-link:hover {
+    background-color: #555;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}

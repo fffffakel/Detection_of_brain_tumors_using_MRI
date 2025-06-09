@@ -1,0 +1,44 @@
+{% extends 'WebSite/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/login.css' %}">
+{% endblock %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="auth-buttons">
+        <h2 class="welcome-text">Вход в систему</h2>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}" class="login-form">
+            {% csrf_token %}
+            <div>
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-form-button">Войти</button>
+        </form>
+
+        <div class="registration-link">
+            <p>Еще нет аккаунта? 
+                <a href="{% url 'signup' %}">Зарегистрироваться</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

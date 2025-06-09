@@ -1,0 +1,4 @@
+fastapi>=0.68
+uvicorn>=0.15
+matplotlib
+pandas

@@ -1,0 +1,58 @@
+/* === Стили для home.html === */
+
+.home-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+}
+
+.welcome-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
+    line-height: 1.4;
+    transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+.btn-link {
+    display: block;
+    text-align: center;
+    background-color: #7477a8;
+    color: white;
+    padding: 15px 25px;
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    font-weight: 1000;
+    font-size: 1.1rem;
+}
+
+.btn-link:hover {
+    background-color: #555;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+}

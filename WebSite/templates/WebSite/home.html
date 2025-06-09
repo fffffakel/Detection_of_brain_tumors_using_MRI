@@ -1,0 +1,27 @@
+{% extends 'WebSite/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'WebSite/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'WebSite/css/home.css' %}">
+{% endblock %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="home-center">
+    {% if user.is_authenticated %}
+        <p class="welcome-text">Добро пожаловать, <strong>{{ user.username }}</strong>!</p>
+
+        <div class="buttons">
+            <a href="{% url 'convert' %}" class="btn-link">New data</a>
+            <a href="{% url 'patients' %}" class="btn-link">Patients</a>
+        </div>
+    {% else %}
+        <div class="auth-buttons">
+            <a href="{% url 'login' %}" class="btn-link">Войти</a>
+            <a href="{% url 'signup' %}" class="btn-link">Зарегистрироваться</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
