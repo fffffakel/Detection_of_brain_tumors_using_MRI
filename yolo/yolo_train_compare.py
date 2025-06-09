@@ -1,22 +1,23 @@
-import matplotlib
-# Важно: Устанавливаем бэкэнд 'Agg' ДО импорта matplotlib.pyplot
-matplotlib.use('Agg') 
-
-import matplotlib.pyplot as plt
-from ultralytics import YOLO
-import torch
-import pandas as pd
-import os
 import argparse
 import glob
-from typing import Optional, Tuple, Dict, Any
-from dataclasses import dataclass
-from ultralytics.engine.results import Results
 import logging
+import os
+from dataclasses import dataclass
+from typing import Optional, Tuple, Dict, Any
+
+import matplotlib
+matplotlib.use('Agg') 
+import matplotlib.pyplot as plt
+import pandas as pd
+import torch
+from ultralytics import YOLO
+from ultralytics.engine.results import Results
+
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ModelConfig:
@@ -30,6 +31,7 @@ class ModelConfig:
     device: str = "cuda"
     workers: int = 0
 
+    
 class ModelTrainer:
     def __init__(self, config: ModelConfig):
         self.config = config
@@ -68,6 +70,7 @@ class ModelTrainer:
         elif hasattr(model, "trainer") and hasattr(model.trainer, "save_dir"):
             return model.trainer.save_dir
         return os.path.join(self.config.save_dir, f"train_{self.config.model_name}")
+
 
 class ModelEvaluator:
     def __init__(self, model_path: str):
@@ -167,6 +170,7 @@ class ModelEvaluator:
             # ОЧЕНЬ ВАЖНО: Закрыть фигуру, чтобы освободить ресурсы Matplotlib после использования
             plt.close(fig) 
 
+
 class ModelComparator:
     @staticmethod
     def compare(model1_path: str, model2_path: str, model1_name: str, model2_name: str, 
@@ -206,6 +210,7 @@ class ModelComparator:
         except Exception as e:
             logger.error(f"Ошибка при сравнении моделей: {str(e)}", exc_info=True)
             raise
+
 
 class InferencePipeline:
     @staticmethod

@@ -1,8 +1,11 @@
-from fastapi import FastAPI, HTTPException, Query
 import os
 import logging
-from yolo_train_compare import InferencePipeline 
+
 import torch
+from fastapi import FastAPI, HTTPException, Query
+
+from yolo_train_compare import InferencePipeline 
+
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -12,9 +15,11 @@ logging.basicConfig(level=logging.INFO)
 BEST_MODEL_PATH = "yolo/best_model.txt" 
 MEDIA_ROOT = "./media/png"
 
+
 @app.get("/")
 async def root():
     return {"status": "YOLO inference server is up and running!"}
+
 
 @app.post("/inference/")
 async def run_inference(
@@ -43,5 +48,5 @@ async def run_inference(
         )
         return {"status": "ok", "folder_id": folder_id, "device": device}
     except Exception as e:
-        logger.error(f"Ошибка инференса: {e}", exc_info=True) # Добавлено exc_info=True для полного трассировки
+        logger.error(f"Ошибка инференса: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

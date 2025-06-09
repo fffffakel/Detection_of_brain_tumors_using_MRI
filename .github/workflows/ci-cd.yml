@@ -73,9 +73,6 @@ jobs:
             fi
           done
 
-          # Применяем миграции (если нужно)
-          docker compose exec -T web python manage.py migrate --noinput
-
           # Запуск тестов
           docker compose exec -T web python manage.py test
           
@@ -89,7 +86,6 @@ jobs:
 
       - name: 🚀 Сборка и пуш образов с правильным тегом
         run: |
-          docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml push
 
       - name: 🧼 Полная остановка и удаление всех контейнеров (включая db и redis)

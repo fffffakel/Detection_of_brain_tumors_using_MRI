@@ -21,7 +21,6 @@
                     <th>Пол</th>
                     <th>Врач</th>
                     <th>Диагноз врача</th>
-                    <th>Диагноз нейросети</th>
                     <th>Путь к данным</th>
                 </tr>
             </thead>
@@ -34,7 +33,6 @@
                     <td>{{ patient.gender }}</td>
                     <td>{{ patient.doctor_name }}</td>
                     <td>{{ patient.doctor_diagnosis }}</td>
-                    <td>{{ patient.neural_diagnosis }}</td>
                     <td><a class="table-link" href="{{ patient.server_path }}">Открыть</a></td>
                 </tr>
                 {% endfor %}
