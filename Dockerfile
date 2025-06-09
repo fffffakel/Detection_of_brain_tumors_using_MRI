@@ -11,5 +11,4 @@ EXPOSE 8000
 
 RUN chmod +x /app/entrypoint.sh
 
-# Запускаем entrypoint
 ENTRYPOINT ["./entrypoint.sh"]

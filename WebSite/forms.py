@@ -13,7 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Username or Email')
-    
+
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if '@' in username:

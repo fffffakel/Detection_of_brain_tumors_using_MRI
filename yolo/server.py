@@ -18,6 +18,13 @@ MEDIA_ROOT = "./media/png"
 
 @app.get("/")
 async def root():
+    """
+    Корневой эндпоинт для проверки состояния сервера.
+
+    Returns:
+        dict: Статус сервера.
+    """
+
     return {"status": "YOLO inference server is up and running!"}
 
 
@@ -26,6 +33,17 @@ async def run_inference(
     folder_id: str = Query(..., description="ID папки (например, '007')"),
     device: str = Query("cpu", description="Устройство для инференса: 'cpu' или 'cuda'")
 ):
+    """
+    Эндпоинт для запуска инференса YOLO на заданной папке с изображениями.
+
+    Args:
+        folder_id (str): ID папки с изображениями.
+        device (str): Устройство для инференса ('cpu' или 'cuda').
+
+    Returns:
+        dict: Статус инференса.
+    """
+
     logger.info(f"Запрос инференса для папки {folder_id} на {device}")
 
     if not os.path.exists(BEST_MODEL_PATH):

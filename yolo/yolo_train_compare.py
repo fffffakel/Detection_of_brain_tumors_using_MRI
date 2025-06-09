@@ -21,6 +21,21 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ModelConfig:
+    """
+    Класс конфигурации модели.
+
+    Args:
+        model_path (str): Путь к файлу модели.
+        data_path (str): Путь к файлу данных.
+        model_name (str): Имя модели.
+        save_dir (str): Путь к директории для сохранения результатов.
+        epochs (int): Количество эпох обучения (по умолчанию 78).
+        imgsz (int): Размер изображения (по умолчанию 640).
+        batch (int): Размер батча (по умолчанию 8).
+        device (str): Устройство для обучения (по умолчанию "cuda").
+        workers (int): Количество рабочих потоков (по умолчанию 0).
+    """
+
     model_path: str
     data_path: str
     model_name: str
@@ -33,10 +48,24 @@ class ModelConfig:
 
     
 class ModelTrainer:
+    """
+    Класс для обучения модели.
+
+    Args:
+        config (ModelConfig): Конфигурация модели.
+    """
+
     def __init__(self, config: ModelConfig):
         self.config = config
 
     def train(self) -> str:
+        """
+        Обучает модель и сохраняет лучшие веса.
+
+        Returns:
+            str: Путь к файлу лучших весов модели.
+        """
+
         logger.info(f"--- Начинаем обучение модели {self.config.model_name} ---")
         try:
             model = YOLO(self.config.model_path)
@@ -65,6 +94,17 @@ class ModelTrainer:
             raise
 
     def _get_weights_dir(self, results, model) -> str:
+        """
+        Получает путь к директории с весами модели.
+
+        Args:
+            results: Результаты обучения.
+            model: Объект модели.
+
+        Returns:
+            str: Путь к директории с весами модели.
+        """
+
         if hasattr(results, "save_dir"):
             return results.save_dir
         elif hasattr(model, "trainer") and hasattr(model.trainer, "save_dir"):
@@ -73,14 +113,32 @@ class ModelTrainer:
 
 
 class ModelEvaluator:
+    """
+    Класс для оценки модели.
+
+    Args:
+        model_path (str): Путь к файлу модели.
+    """
+
     def __init__(self, model_path: str):
         # Инициализируем модель только один раз при создании экземпляра
         self.model = YOLO(model_path).to('cpu')
 
     def evaluate(self, test_image_path: str, save_vis_dir: Optional[str] = None, prefix: str = "", device: str = "cpu") -> Dict[str, Any]:
-        # Убедитесь, что device передается в метод model()
+        """
+        Оценивает модель на тестовом изображении и сохраняет визуализацию предсказаний.
+
+        Args:
+            test_image_path (str): Путь к тестовому изображению.
+            save_vis_dir (Optional[str]): Путь к директории для сохранения визуализаций.
+            prefix (str): Префикс для имен файлов сохраненных визуализаций.
+            device (str): Устройство для оценки (по умолчанию "cpu").
+
+        Returns:
+            Dict[str, Any]: Метрики оценки модели.
+        """
+
         try:
-            # Устранена дублирующая строка results = self.model(test_image_path)
             results = self.model(test_image_path, device=device) 
             metrics = {}
             no_tumor_data = None
@@ -117,6 +175,16 @@ class ModelEvaluator:
             raise
 
     def _process_detection(self, result) -> Tuple[Any, str]:
+        """
+        Обрабатывает детекцию из результатов модели.
+
+        Args:
+            result: Результаты детекции.
+
+        Returns:
+            Tuple[Any, str]: Лучший бокс и название класса.
+        """
+
         confs = result.boxes.conf.cpu().numpy()
         max_idx = confs.argmax()
         best_box = result.boxes[max_idx:max_idx+1]
@@ -124,15 +192,37 @@ class ModelEvaluator:
         return best_box, result.names[class_id]
 
     def _calculate_metrics(self, best_box) -> Dict[str, float]:
+        """
+        Вычисляет метрики для лучшего бокса.
+
+        Args:
+            best_box: Лучший бокс.
+
+        Returns:
+            Dict[str, float]: Метрики (средняя и максимальная уверенность).
+        """
+
         conf = best_box.conf.cpu().numpy()[0]
         return {'avg_confidence': conf, 'max_confidence': conf}
 
     def _save_prediction(self, best_box: Any, result: Results, test_image_path: str, 
                          save_vis_dir: Optional[str], prefix: str, idx: int) -> None:
+        """
+        Сохраняет визуализацию предсказания.
+
+        Args:
+            best_box: Лучший бокс.
+            result: Результаты детекции.
+            test_image_path (str): Путь к тестовому изображению.
+            save_vis_dir (Optional[str]): Путь к директории для сохранения визуализаций.
+            prefix (str): Префикс для имени файла.
+            idx (int): Индекс изображения.
+        """
+
         # Создаем новую фигуру и оси для каждого изображения
         # Размер figsize и dpi можно настроить, если нужно более высокое разрешение
         fig, ax = plt.subplots(figsize=(result.orig_img.shape[1] / 100, result.orig_img.shape[0] / 100), dpi=100)
-        
+
         try:
             # Создаем новый объект Results с выбранным боксом для plot
             best_result = Results(
@@ -141,8 +231,8 @@ class ModelEvaluator:
                 names=result.names
             )
             best_result.boxes = best_box
-            best_result.masks = None # Убедитесь, что маски не используются, если не нужны
-            best_result.probs = None # Убедитесь, что probs не используются, если не нужны
+            best_result.masks = None
+            best_result.probs = None
 
             # Получаем аннотированный кадр (numpy array)
             annotated_frame = best_result.plot()
@@ -172,9 +262,28 @@ class ModelEvaluator:
 
 
 class ModelComparator:
+    """
+    Класс для сравнения моделей.
+    """
+
     @staticmethod
     def compare(model1_path: str, model2_path: str, model1_name: str, model2_name: str, 
                 test_image_path: str, save_vis_dir: Optional[str] = None) -> Optional[str]:
+        """
+        Сравнивает две модели на тестовом изображении.
+
+        Args:
+            model1_path (str): Путь к файлу первой модели.
+            model2_path (str): Путь к файлу второй модели.
+            model1_name (str): Имя первой модели.
+            model2_name (str): Имя второй модели.
+            test_image_path (str): Путь к тестовому изображению.
+            save_vis_dir (Optional[str]): Путь к директории для сохранения визуализаций.
+
+        Returns:
+            Optional[str]: Путь к лучшей модели или None, если сравнение не удалось.
+        """
+
         try:
             logger.info("\n--- Сравнение моделей ---")
             evaluator1 = ModelEvaluator(model1_path)
@@ -213,8 +322,22 @@ class ModelComparator:
 
 
 class InferencePipeline:
+    """
+    Класс для выполнения инференса модели.
+    """
+
     @staticmethod
     def run_inference(best_model: str, media_root: str, single_folder_id: Optional[str] = None, device: str = "cpu") -> None:
+        """
+        Выполняет инференс лучшей модели на изображениях.
+
+        Args:
+            best_model (str): Путь к лучшей модели.
+            media_root (str): Путь к корневой директории с изображениями.
+            single_folder_id (Optional[str]): ID папки для инференса (по умолчанию None).
+            device (str): Устройство для инференса (по умолчанию "cpu").
+        """
+
         try:
             logger.info(f"\n=== Инференс лучшей модели: {best_model} ===")
             evaluator = ModelEvaluator(best_model)
@@ -255,6 +378,10 @@ class InferencePipeline:
 
 
 def main():
+    """
+    Главная функция для запуска обучения и инференса модели.
+    """
+
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument("--predict_only", action="store_true", help="Только предикт (по умолчанию включен)")
@@ -331,6 +458,7 @@ def main():
     except Exception as e:
         logger.error(f"Критическая ошибка в main: {str(e)}", exc_info=True)
         raise
+
 
 if __name__ == "__main__":
     main()

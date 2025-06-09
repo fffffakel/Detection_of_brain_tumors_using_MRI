@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'WebSite.middleware.MediaFileMiddleware',
+    'WebSite.middleware.redirect_if_not_authenticated_middleware'
 ]
 
 ROOT_URLCONF = 'BrainTumor.urls'

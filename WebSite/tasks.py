@@ -10,12 +10,24 @@ from .utils import convert_nii_to_png, get_patient, update_patient_server_path
 
 logger = logging.getLogger(__name__)
 
+
+# URL сервера YOLO, который можно переопределить через переменную окружения
 YOLO_SERVER_URL = os.getenv("YOLO_SERVER_URL",
                             "http://yoloserver:8001/inference/")
 
 
 @shared_task(bind=True)
 def convert_patient_nii(self, patient_id, full_path, filename):
+    """
+    Асинхронная задача для конвертации NIfTI файла в PNG и отправки на обработку YOLO-серверу.
+
+    Args:
+        self (Celery task instance): Экземпляр задачи Celery.
+        patient_id (int): Уникальный идентификатор пациента.
+        full_path (str): Полный путь к NIfTI файлу.
+        filename (str): Имя файла.
+    """
+
     logger.info(f"Start converting patient {patient_id}, file: {full_path}")
     try:
         # Абсолютный путь к .nii
@@ -28,7 +40,7 @@ def convert_patient_nii(self, patient_id, full_path, filename):
         raw_folder_name = os.path.join(str(patient.id), "raw")
         output_folder = os.path.join("png", raw_folder_name)
 
-        # Сохраняем "33" как server_path
+        # Сохраняем "ID" как server_path
         server_path = str(patient.id)
 
         logger.info(f"Путь к nii файлу: {nii_path}")
@@ -42,7 +54,7 @@ def convert_patient_nii(self, patient_id, full_path, filename):
 
         logger.info(f"Successfully converted patient {patient_id}, folder: {output_folder}")
 
-        # === Отправка запроса на YOLO-сервер ===
+        # Отправка запроса на YOLO-сервер для начала инференса
         logger.info(f"Sending inference request to YOLO server for folder: {server_path}")
         response = requests.post(YOLO_SERVER_URL, params={"folder_id": f"{server_path}"}, timeout=600)
 

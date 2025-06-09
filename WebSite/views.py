@@ -1,13 +1,10 @@
-# Standard library imports
 import os
 
-# Third-party imports
 import matplotlib
 matplotlib.use('Agg')  # Используем без GUI
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Django imports
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
@@ -21,7 +18,6 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.text import get_valid_filename
 
-# Local application imports
 from .models import Patient
 from .tasks import convert_patient_nii
 
@@ -29,6 +25,19 @@ from .tasks import convert_patient_nii
 # === User registration ===
 
 def validate_registration(username, email, password, confirm_password):
+    """
+    Проверяет валидность данных регистрации.
+
+    Args:
+        username (str): Имя пользователя.
+        email (str): Email пользователя.
+        password (str): Пароль пользователя.
+        confirm_password (str): Подтверждение пароля.
+
+    Returns:
+        str or None: Сообщение об ошибке или None, если данные валидны.
+    """
+
     if password != confirm_password:
         return "Пароли не совпадают!"
     if User.objects.filter(username=username).exists():
@@ -39,6 +48,18 @@ def validate_registration(username, email, password, confirm_password):
 
 
 def create_user_account(username, email, password):
+    """
+    Создает новый аккаунт пользователя.
+
+    Args:
+        username (str): Имя пользователя.
+        email (str): Email пользователя.
+        password (str): Пароль пользователя.
+
+    Returns:
+        User: Созданный объект пользователя.
+    """
+
     user = User.objects.create_user(username=username,
                                     email=email,
                                     password=password)
@@ -47,6 +68,16 @@ def create_user_account(username, email, password):
 
 
 def register_view(request):
+    """
+    Представление для регистрации нового пользователя.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+
+    Returns:
+        HttpResponse: Ответ HTTP с отображением страницы регистрации или перенаправлением на страницу входа.
+    """
+
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
@@ -72,6 +103,16 @@ def register_view(request):
 # === User login/logout ===
 
 def login_view(request):
+    """
+    Представление для входа пользователя в систему.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+
+    Returns:
+        HttpResponse: Ответ HTTP с отображением страницы входа или перенаправлением на домашнюю страницу.
+    """
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -93,6 +134,16 @@ def login_view(request):
 
 
 def logout_view(request):
+    """
+    Представление для выхода пользователя из системы.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+
+    Returns:
+        HttpResponse: Ответ HTTP с перенаправлением на домашнюю страницу.
+    """
+
     logout(request)
     messages.success(request,
                      "Вы вышли из системы.")
@@ -102,6 +153,16 @@ def logout_view(request):
 # === Home page view ===
 
 def home(request):
+    """
+    Представление для домашней страницы.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+
+    Returns:
+        HttpResponse: Ответ HTTP с отображением домашней страницы.
+    """
+
     return render(request, 'WebSite/home.html')
 
 
@@ -109,6 +170,16 @@ def home(request):
 
 @login_required
 def patients(request):
+    """
+    Представление для отображения списка пациентов.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+
+    Returns:
+        HttpResponse: Ответ HTTP с отображением списка пациентов.
+    """
+
     patients_data = (
         Patient.objects
         .filter(doctor_name=request.user.username)
@@ -120,10 +191,24 @@ def patients(request):
 # === NII file handling service ===
 
 class NiiFileHandler:
+    """
+    Класс для обработки NIfTI файлов.
+    """
+
     ALLOWED_EXTENSIONS = {".nii", ".nii.gz"}
 
     @staticmethod
     def is_valid_extension(filename):
+        """
+        Проверяет, имеет ли файл допустимое расширение.
+
+        Args:
+            filename (str): Имя файла.
+
+        Returns:
+            bool: True, если расширение допустимо, иначе False.
+        """
+
         ext = os.path.splitext(filename)[-1].lower()
         if filename.endswith(".nii.gz"):
             ext = ".nii.gz"
@@ -131,6 +216,17 @@ class NiiFileHandler:
 
     @staticmethod
     def save_file(user, file):
+        """
+        Сохраняет загруженный NIfTI файл.
+
+        Args:
+            user (User): Объект пользователя.
+            file (UploadedFile): Загруженный файл.
+
+        Returns:
+            tuple: Кортеж с именем файла и полным путем к файлу.
+        """
+
         filename = get_valid_filename(file.name)
         if not NiiFileHandler.is_valid_extension(filename):
             raise SuspiciousOperation(f"Invalid file type: {filename}")
@@ -143,6 +239,17 @@ class NiiFileHandler:
 
 
 def create_patient_record(data, doctor_name):
+    """
+    Создает новую запись пациента в базе данных.
+
+    Args:
+        data (dict): Словарь с данными пациента.
+        doctor_name (str): Имя врача, создающего запись.
+
+    Returns:
+        Patient: Созданный объект пациента.
+    """
+
     return Patient.objects.create(
         name=data['name'],
         age=int(data['age']),
@@ -155,6 +262,16 @@ def create_patient_record(data, doctor_name):
 
 @login_required
 def convert(request):
+    """
+    Представление для загрузки NIfTI файла и создания записи пациента.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+
+    Returns:
+        HttpResponse: Ответ HTTP с отображением страницы загрузки файла или перенаправлением на ту же страницу.
+    """
+
     if request.method == "POST" and request.FILES.get("nii_file"):
         nii_file = request.FILES["nii_file"]
 
@@ -179,6 +296,17 @@ def convert(request):
 
 @login_required
 def view_pngs(request, folder):
+    """
+    Представление для просмотра PNG изображений и подпапок.
+
+    Args:
+        request (HttpRequest): Объект запроса.
+        folder (str): Путь к папке с изображениями.
+
+    Returns:
+        HttpResponse: Ответ HTTP с отображением списка изображений или подпапок.
+    """
+
     base_folder = os.path.join(settings.MEDIA_ROOT, "png", folder)
 
     if not os.path.exists(base_folder):

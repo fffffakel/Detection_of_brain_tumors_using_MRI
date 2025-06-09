@@ -1,17 +1,30 @@
 import os
+import logging
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # Установка backend ДО pyplot
-import matplotlib.pyplot as plt
-import logging
 from django.conf import settings
 
 from .models import Patient
+
+
 logger = logging.getLogger(__name__)
 
 
 def convert_nii_to_png(input_path, output_base_folder, filename, slice_range=(124, 180)):
+    """
+    Конвертирует NIfTI файл в серию изображений PNG.
+
+    Args:
+        input_path (str): Путь к входному NIfTI файлу.
+        output_base_folder (str): Базовая папка для сохранения изображений PNG.
+        filename (str): Имя файла (не используется в текущей реализации).
+        slice_range (tuple): Диапазон срезов для конвертации (по умолчанию от 124 до 180).
+    """
+
     logger.info(f"Начинаем конвертацию {input_path}")
     try:
         if not os.path.exists(input_path):
@@ -55,9 +68,27 @@ def convert_nii_to_png(input_path, output_base_folder, filename, slice_range=(12
 
 
 def get_patient(patient_id):
+    """
+    Получает объект пациента по его ID.
+
+    Args:
+        patient_id (int): Уникальный идентификатор пациента.
+
+    Returns:
+        Patient: Объект пациента.
+    """
+
     return Patient.objects.get(id=patient_id)
 
 
 def update_patient_server_path(patient, server_path):
+    """
+    Обновляет путь сервера для указанного пациента.
+
+    Args:
+        patient (Patient): Объект пациента.
+        server_path (str): Новый путь сервера для пациента.
+    """
+
     patient.server_path = server_path
     patient.save()
