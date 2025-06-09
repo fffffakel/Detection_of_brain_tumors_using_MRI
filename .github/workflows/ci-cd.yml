@@ -52,6 +52,13 @@ jobs:
           docker system prune -af || true
           df -h
 
+      - name: 🏷 Определение тега Docker
+        id: docker_tag
+        run: |
+          RAW_TAG=$(if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then echo "latest"; else echo "${GITHUB_REF##refs/heads/}"; fi)
+          SAFE_TAG=$(echo "$RAW_TAG" | tr '/' '-' | tr -cd 'a-zA-Z0-9_.-')
+          echo "TAG=$SAFE_TAG" >> $GITHUB_ENV
+
       - name: 🛠️ Сборка всех сервисов из docker-compose.yml
         run: |
           docker compose -f docker-compose.yml build --no-cache
@@ -75,14 +82,6 @@ jobs:
           docker compose exec -T web python manage.py migrate --noinput
           # Запуск тестов
           docker compose exec -T web python manage.py test
-          
-      - name: 🏷 Определение тега Docker
-        id: docker_tag
-        run: |
-          RAW_TAG=$(if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then echo "latest"; else echo "${GITHUB_REF##refs/heads/}"; fi)
-          SAFE_TAG=$(echo "$RAW_TAG" | tr '/' '-' | tr -cd 'a-zA-Z0-9_.-')
-          echo "TAG=$SAFE_TAG" >> $GITHUB_ENV
-
 
       - name: 🚀 Сборка и пуш образов с правильным тегом
         run: |
