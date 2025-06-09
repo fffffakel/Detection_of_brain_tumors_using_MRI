@@ -99,33 +99,22 @@ jobs:
         run: |
           docker compose -f docker-compose.yml push
           
-      - name: 🤝 Деплой на сервер по SSH (только образы из Docker Hub)
-        if: github.ref == 'refs/heads/main'
-        uses: webfactory/ssh-agent@v0.7.0
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      
-      - name: 🚀 Выполнение деплоя по SSH
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: |
-          echo "📡 Подключаемся к $SSH_USER@$SSH_HOST"
-          ssh -o StrictHostKeyChecking=no -p 4444 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            set -e
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }} # Должен быть capybariana
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # Здесь используется приватный ключ
+          port: 4444
+          script: |
             cd ~/workspace/BrainRot
-      
             echo "🧹 Остановка текущих контейнеров"
             docker compose down
-      
-            echo "📦 Получение новых образов из Docker Hub"
+            echo "📦 Получение новых образов"
             docker compose pull
-      
             echo "🚀 Перезапуск в фоне"
             docker compose up -d
-      
             echo "✅ Деплой завершён"
-          EOF
        
       - name: 🧼 Полная остановка и удаление всех контейнеров (включая db и redis)
         if: always()
