@@ -111,7 +111,7 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
           echo "📡 Подключаемся к $SSH_USER@$SSH_HOST"
-          ssh -o StrictHostKeyChecking=no -p 4444 "$SSH_USER@$SSH_HOST" << 'EOF'
+          ssh -o StrictHostKeyChecking=no -p 4444 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
             cd ~/workspace/BrainRot
       
