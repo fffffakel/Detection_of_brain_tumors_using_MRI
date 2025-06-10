@@ -257,7 +257,6 @@ class ModelEvaluator:
             logger.error(f"Ошибка при сохранении предсказания: {str(e)}", exc_info=True)
             raise
         finally:
-            # ОЧЕНЬ ВАЖНО: Закрыть фигуру, чтобы освободить ресурсы Matplotlib после использования
             plt.close(fig) 
 
 
@@ -341,8 +340,6 @@ class InferencePipeline:
         try:
             logger.info(f"\n=== Инференс лучшей модели: {best_model} ===")
             evaluator = ModelEvaluator(best_model)
-            # ВАЖНО: УДАЛЕНА строка evaluator.model = YOLO(best_model), 
-            # так как модель уже инициализируется в ModelEvaluator.__init__
 
             if single_folder_id:
                 target_dir = os.path.join(media_root, single_folder_id, "raw")
